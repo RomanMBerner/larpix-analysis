@@ -36,8 +36,8 @@ from plot_functions import *
 
 # Import from other directories:
 import sys
-evd_libpath             = '/home/rberner/PACMAN/larpix-v2-testing-scripts/event-display/'
-larpix_geometry_libpath = '/home/rberner/PACMAN/larpix-geometry/'
+evd_libpath             = '/home/lhep/PACMAN/larpix-v2-testing-scripts/event-display/'
+larpix_geometry_libpath = '/home/lhep/PACMAN/larpix-geometry/'
 sys.path.append(evd_libpath)
 sys.path.append(larpix_geometry_libpath)
 
@@ -75,10 +75,10 @@ def main(argv=None):
     # ============================================================
     # Set paths
     # ============================================================
-    datapath = '/home/rberner/PACMAN/analysis/trees_livio/data/convertedData'
+    datapath = '/home/lhep/PACMAN/DAQ/SingleCube_Oct2020/dataRuns/convertedData'
     print ' datapath: ', datapath
 
-    outputpath = '/home/rberner/PACMAN/analysis/trees_livio/generated_trees'
+    outputpath = '/home/lhep/PACMAN/DAQ/SingleCube_Oct2020/dataRuns/rootTrees'
     print ' outputpath: ', outputpath
 
     files = sorted([os.path.basename(path) for path in glob.glob(datapath+'/*.h5')])
@@ -91,20 +91,8 @@ def main(argv=None):
     # Output Tree and File
     # ============================================================
     #inputFileName = (str(args.data_file)[34:])[:-7]   # excludes ending .root
-    #inputFileName = files[0]
-
-    inputFileName = 'datalog_2020_10_31_11_41_03_CET_evd.h5'
-#    inputFileName = 'datalog_2020_10_31_11_47_20_CET_evd.h5' # not yet processed
-#    inputFileName = 'datalog_2020_10_31_12_19_32_CET_evd.h5' # not yet processed
-#    inputFileName = 'datalog_2020_10_31_12_51_07_CET_evd.h5' # not yet processed
-    #inputFileName = 'datalog_2020_10_31_13_42_53_CET_evd.h5'
-#    inputFileName = 'datalog_2020_10_31_13_48_55_CET_evd.h5' # not yet processed
-#    inputFileName = 'datalog_2020_10_31_14_20_33_CET_evd.h5' # not yet processed
-    #inputFileName = 'datalog_2020_11_01_07_56_59_CET_evd.h5'
-    #inputFileName = 'datalog_2020_11_01_08_36_35_CET_evd.h5'
-    #inputFileName = 'datalog_2020_11_01_08_47_56_CET_evd.h5'
-    #inputFileName = 'datalog_2020_11_01_08_55_40_CET_evd.h5'
-    #inputFileName = 'datalog_2020_11_01_09_34_10_CET_evd.h5'
+    inputFileName = files[0]
+    #inputFileName = 'datalog_2020_10_31_11_41_03_CET_evd.h5'
 
 
     print ' inputFileName: ', inputFileName
@@ -244,7 +232,7 @@ def main(argv=None):
     # Plot event timestamps
 
     # Plot event summaries
-    folder_name = 'plots/'+str(output_folderName)+'/event_analysis/'
+    folder_name = 'plots/'+str(output_folderName)+'/event_analysis'
     plot_event_ts(f['events'],folder_name)
     plot_event_durations(f['events'],folder_name)
     plot_event_unix_ts(f['events'],folder_name)
@@ -330,7 +318,7 @@ def main(argv=None):
     #print ' Track IDs of good tracks (', len(f['tracks']['track_id'][good_track_mask]), '): ', f['tracks']['track_id'][good_track_mask]
 
 
-    if len(f['tracks']):  
+    if len(f['tracks']):
 
         # nhits
         # ----------------
@@ -348,23 +336,23 @@ def main(argv=None):
 
         # charge
         # ----------------
-        #residual_cut = 
+        #residual_cut =
         #good_track_mask = np.logical_and(np.linalg.norm(f['tracks']['q'][:,:3],axis=-1) < residual_cut, good_track_mask)
 
         # residual
         # ----------------
-        #residual_cut = 
+        #residual_cut =
         #good_track_mask = np.logical_and(np.linalg.norm(f['tracks']['residual'][:,:3],axis=-1) < residual_cut, good_track_mask)
 
         # theta
         # ----------------
-        #theta_cut = 
+        #theta_cut =
         #good_track_mask = np.logical_and(np.abs(f['tracks']['theta']) > theta_cut, good_track_mask)
         #good_track_mask = np.logical_and(np.abs(np.pi - f['tracks']['theta']) > theta_cut, good_track_mask)
 
         # hits per event fraction
         # ----------------
-        #event_frac_cut = 
+        #event_frac_cut =
         #event_hits = np.array([f['events'][ f['tracks'][i]['event_ref'] ]['nhit'][0] for i in range(len(f['tracks']))])
         #event_fraction = f['tracks']['nhit']/event_hits
         #good_track_mask = np.logical_and(event_fraction > event_frac_cut, good_track_mask)
@@ -473,7 +461,7 @@ def main(argv=None):
                 os.system(command)
 
 
-            # Fill to output_tree            
+            # Fill to output_tree
             output_tree.Fill()
 
 
