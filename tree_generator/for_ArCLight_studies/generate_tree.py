@@ -76,10 +76,10 @@ def main(argv=None):
     # ============================================================
     # Set paths
     # ============================================================
-    datapath = '/home/lhep/PACMAN/DAQ/SingleCube_Oct2020/dataRuns/convertedData/new'
+    datapath = '/home/lhep/PACMAN/DAQ/SingleModule_Nov2020/dataRuns/convertedData'
     print ' datapath: ', datapath
 
-    outputpath = '/home/lhep/PACMAN/DAQ/SingleCube_Oct2020/dataRuns/rootTrees'
+    outputpath = '/home/lhep/PACMAN/DAQ/SingleModule_Nov2020/dataRuns/rootTrees'
     print ' outputpath: ', outputpath
 
     files = sorted([os.path.basename(path) for path in glob.glob(datapath+'/*.h5')])
@@ -93,13 +93,14 @@ def main(argv=None):
     # ============================================================
     #inputFileName = (str(args.data_file)[34:])[:-7]   # excludes ending .root
     for file_number in range(len(files)):
-            
+
         # Only process specific files
-        #if files[file_number] != 'datalog_2020_10_31_11_41_03_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_11_27_08_07_55_CET_evd.h5':
         #    continue
-        if not (file_number >= 0 and file_number < 5):
-            continue
-        
+
+        #if not (file_number >= 0 and file_number < 10):
+        #    continue
+
         inputFileName = files[file_number]
 
         # Define if plots are made or not
@@ -117,47 +118,62 @@ def main(argv=None):
         # For plots, create folder
             output_folderName = outFileName[8:-9]
             try:
-                os.system('rm -rf plots/'+str(output_folderName))
-                os.system('mkdir plots/'+str(output_folderName))
-                os.system('mkdir plots/'+str(output_folderName)+'/event_analysis')
-                os.system('mkdir plots/'+str(output_folderName)+'/event_displays')
-                os.system('mkdir plots/'+str(output_folderName)+'/track_analysis')
-                os.system('mkdir plots/'+str(output_folderName)+'/track_displays')
+                os.system('rm -rf '+str(outputpath)+'/plots/'+str(output_folderName))
+                os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName))
+                os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName)+'/event_analysis')
+                os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName)+'/event_displays')
+                os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName)+'/track_analysis')
+                os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName)+'/track_displays')
             except:
                 print ' --- WARNING: Exception in os commands --- '
                 pass
 
+        #os.system('ls /data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/')
+        #os.system('ls /data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/plots/')
+        #os.system('ls /data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/plots/'+str(output_folderName))
+
+        MAXHITS = 5000
+
         # Event informations
-        eventID              = array('i',[0])     # event ID [-]
-        event_start_t        = array('i',[0])     # event timestamp start [UNITS?]
-        event_end_t          = array('i',[0])     # event timestamp end [UNITS?]
-        event_duration       = array('i',[0])     # event timestamp end - start [UNITS?]
-        event_unix_ts        = array('i',[0])     # event unix timestamp [UNITS?]
-        event_nhits          = array('i',[0])     # number of hits in the event [-]
-        event_q              = array('f',[0.])    # total deposited charge [ke]
-        event_q_raw          = array('f',[0.])    # total deposited raw charge [ke]
-        event_ntracks        = array('i',[0])     # number of tracks
-        event_n_ext_trigs    = array('i',[0])     # number of external triggers
+        eventID              = array('i',[0])           # event ID [-]
+        event_start_t        = array('i',[0])           # event timestamp start [UNITS?]
+        event_end_t          = array('i',[0])           # event timestamp end [UNITS?]
+        event_duration       = array('i',[0])           # event timestamp end - start [UNITS?]
+        event_unix_ts        = array('i',[0])           # event unix timestamp [UNITS?]
+        event_nhits          = array('i',[0])           # number of hits in the event [-]
+        event_q              = array('f',[0.])          # total deposited charge [ke]
+        event_q_raw          = array('f',[0.])          # total deposited raw charge [ke]
+        event_ntracks        = array('i',[0])           # number of tracks [-]
+        event_n_ext_trigs    = array('i',[0])           # number of external triggers [-]
+	event_hits_x         = array('f',[0.]*MAXHITS)  # events hit coordinates (x)
+        event_hits_y         = array('f',[0.]*MAXHITS)  # events hit coordinates (y)
+	event_hits_ts        = array('f',[0.]*MAXHITS)  # events hit coordinates (timestamp)
+	event_hits_q         = array('f',[0.]*MAXHITS)  # events hit charge (ke)
 
         # Track informations
         trackID              = array('i',[0])
-        track_start_pos_x    = array('f',[0.])    # start position x of the track [mm]
-        track_start_pos_y    = array('f',[0.])    # start position y of the track [mm]
-        track_start_pos_z    = array('f',[0.])    # start position z of the track [mm]
-        track_start_pos_t    = array('f',[0.])    # start position t of the track [0.1 us]
-        track_end_pos_x      = array('f',[0.])    # end   position x of the track [mm]
-        track_end_pos_y      = array('f',[0.])    # end   position y of the track [mm]
-        track_end_pos_z      = array('f',[0.])    # end   position z of the track [mm]
-        track_end_pos_t      = array('f',[0.])    # end   position t of the track [0.1 us]
-        track_length         = array('f',[0.])    # length of the track [mm]
-        track_nhits          = array('i',[0])     # number of hits in the track [-]
-        track_q              = array('f',[0.])    # total deposited charge [ke]
-        track_q_raw          = array('f',[0.])    # total deposited raw charge [ke]
-        track_theta          = array('f',[0.])    # track theta
-        track_phi            = array('f',[0.])    # track phi
-        track_residual_x     = array('f',[0.])    # track residual x
-        track_residual_y     = array('f',[0.])    # track residual y
-        track_residual_z     = array('f',[0.])    # track residual z
+        track_nhits          = array('i',[0])           # number of hits in the track [-]
+        track_start_pos_x    = array('f',[0.])          # start position x of the track [mm]
+        track_start_pos_y    = array('f',[0.])          # start position y of the track [mm]
+        track_start_pos_z    = array('f',[0.])          # start position z of the track [mm]
+        track_start_pos_t    = array('f',[0.])          # start position t of the track [0.1 us]
+        track_end_pos_x      = array('f',[0.])          # end   position x of the track [mm]
+        track_end_pos_y      = array('f',[0.])          # end   position y of the track [mm]
+        track_end_pos_z      = array('f',[0.])          # end   position z of the track [mm]
+        track_end_pos_t      = array('f',[0.])          # end   position t of the track [0.1 us]
+        track_length         = array('f',[0.])          # length of the track [mm]
+        track_nhits          = array('i',[0])           # number of hits in the track [-]
+        track_q              = array('f',[0.])          # total deposited charge [ke]
+        track_q_raw          = array('f',[0.])          # total deposited raw charge [ke]
+        track_theta          = array('f',[0.])          # track theta
+        track_phi            = array('f',[0.])          # track phi
+        track_residual_x     = array('f',[0.])          # track residual x
+        track_residual_y     = array('f',[0.])          # track residual y
+        track_residual_z     = array('f',[0.])          # track residual z
+        track_hits_x         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (x)
+        track_hits_y         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (y)
+        track_hits_ts        = array('f',[0.]*MAXHITS)  # tracks hit coordinates (timestamp)
+        track_hits_q         = array('f',[0.]*MAXHITS)  # tracks hit charge (ke)
 
         # External Trigger informations
         trigID               = array('i',[0])     # trigger ID
@@ -174,9 +190,14 @@ def main(argv=None):
         output_tree.Branch("event_q_raw"       ,event_q_raw       ,"event_q_raw/F")
         output_tree.Branch("event_ntracks"     ,event_ntracks     ,"event_ntracks/I")
         output_tree.Branch("event_n_ext_trigs" ,event_n_ext_trigs ,"event_n_ext_trigs/I")
+	output_tree.Branch("event_hits_x"      ,event_hits_x      ,"event_hits_x[event_nhits]/F")
+	output_tree.Branch("event_hits_y"      ,event_hits_y      ,"event_hits_y[event_nhits]/F")
+	output_tree.Branch("event_hits_ts"     ,event_hits_ts     ,"event_hits_ts[event_nhits]/F")
+	output_tree.Branch("event_hits_q"      ,event_hits_q      ,"event_hits_q[event_nhits]/F")
 
         # Tracks
         output_tree.Branch("trackID"          ,trackID          ,"trackID/I")
+        output_tree.Branch("track_nhits"      ,track_nhits      ,"track_nhits/I")
         output_tree.Branch("track_start_pos_x",track_start_pos_x,"track_start_pos_x/F")
         output_tree.Branch("track_start_pos_y",track_start_pos_y,"track_start_pos_y/F")
         output_tree.Branch("track_start_pos_z",track_start_pos_z,"track_start_pos_z/F")
@@ -194,6 +215,10 @@ def main(argv=None):
         output_tree.Branch("track_residual_x" ,track_residual_x ,"track_residual_x/F")
         output_tree.Branch("track_residual_y" ,track_residual_y ,"track_residual_y/F")
         output_tree.Branch("track_residual_z" ,track_residual_z ,"track_residual_z/F")
+        output_tree.Branch("track_hits_x"     ,track_hits_x     ,"track_hits_x[track_nhits]/F")
+        output_tree.Branch("track_hits_y"     ,track_hits_y     ,"track_hits_y[track_nhits]/F")
+        output_tree.Branch("track_hits_ts"    ,track_hits_ts    ,"track_hits_ts[track_nhits]/F")
+        output_tree.Branch("track_hits_q"     ,track_hits_q     ,"track_hits_q[track_nhits]/F")
 
         # External Triggers
         output_tree.Branch("trigID"           ,trigID           ,"trigID/I")
@@ -240,7 +265,7 @@ def main(argv=None):
 
         # Plot event summaries
         if make_plots:
-            folder_name = 'plots/'+str(output_folderName)+'/event_analysis'
+            folder_name = str(outputpath)+'/plots/'+str(output_folderName)+'/event_analysis'
             plot_event_ts(f['events'],folder_name)
             plot_event_durations(f['events'],folder_name)
             plot_event_unix_ts(f['events'],folder_name)
@@ -297,7 +322,7 @@ def main(argv=None):
         if make_plots:
             for evID_index in range(len(event_IDs_externally_triggered)):
                 event = f['events'][event_IDs_externally_triggered[evID_index]]
-                print ' evID:       ', event['evid']
+                #print ' evID:       ', event['evid']
                 hit_ref = event['hit_ref']
                 x = f['hits'][hit_ref]['px']
                 y = f['hits'][hit_ref]['py']
@@ -312,7 +337,7 @@ def main(argv=None):
                 name='eventDisplay_evID_{}'.format(event['evid'])
                 fig = vol3d_python2(x,y,z,q,name=name,fig=None)#,*geom_limits)
                 plt.show()
-                plt.savefig('plots/'+str(output_folderName)+'/event_displays/'+str(name)+'.png')
+                plt.savefig(str(outputpath)+'/plots/'+str(output_folderName)+'/event_displays/'+str(name)+'.png')
                 plt.close()
 
 
@@ -331,11 +356,12 @@ def main(argv=None):
             good_track_mask = np.logical_and(f['tracks']['nhit'] > nhit_cut, good_track_mask)
             #print 'good_track_mask (', len(good_track_mask), '): ', good_track_mask
             #print ' Track IDs (', len(f['tracks']['track_id'][good_track_mask]), '): ', f['tracks']['track_id'][good_track_mask]
-            '''
+            #'''
             # length
             # ----------------
-            #length_cut =
-            #good_track_mask = np.logical_and(f['tracks']['length'] > length_cut, good_track_mask)
+            length_cut = 300
+            good_track_mask = np.logical_and(f['tracks']['length'] > length_cut, good_track_mask)
+            '''
             # charge
             # ----------------
             #residual_cut =
@@ -349,13 +375,13 @@ def main(argv=None):
             #theta_cut =
             #good_track_mask = np.logical_and(np.abs(f['tracks']['theta']) > theta_cut, good_track_mask)
             #good_track_mask = np.logical_and(np.abs(np.pi - f['tracks']['theta']) > theta_cut, good_track_mask)
+            '''
             # hits per event fraction
             # ----------------
-            #event_frac_cut =
-            #event_hits = np.array([f['events'][ f['tracks'][i]['event_ref'] ]['nhit'][0] for i in range(len(f['tracks']))])
-            #event_fraction = f['tracks']['nhit']/event_hits
-            #good_track_mask = np.logical_and(event_fraction > event_frac_cut, good_track_mask)
-            '''
+            event_frac_cut = 0.8
+            event_hits = np.array([f['events'][ f['tracks'][i]['event_ref'] ]['nhit'][0] for i in range(len(f['tracks']))])
+            event_fraction = f['tracks']['nhit']/event_hits
+            good_track_mask = np.logical_and(event_fraction > event_frac_cut, good_track_mask)
 
             # Only accept those tracks which have an external trigger:
             print ' len(good_track_mask): ', len(good_track_mask)
@@ -393,7 +419,7 @@ def main(argv=None):
             print ' Number of selected tracks in file', inputFileName, ':', len(f['tracks'][good_track_mask])
 
             for track_index, track in enumerate(f['tracks'][good_track_mask]):
-                #if track_index > 10:
+                #if track_index > 0:
                 #    break
 
                 # Only get those tracks where the event got externally triggered
@@ -416,13 +442,26 @@ def main(argv=None):
                 event_duration[0]    = f['events'][track['event_ref']]['ts_end'][0] -\
                                        f['events'][track['event_ref']]['ts_start'][0]
                 event_unix_ts[0]     = f['events'][track['event_ref']]['unix_ts']
-                event_nhits[0]       = f['events'][track['event_ref']]['nhit']
-                event_q[0]           = f['events'][track['event_ref']]['q']
-                event_q_raw[0]       = f['events'][track['event_ref']]['q_raw']
-                event_ntracks[0]     = f['events'][track['event_ref']]['ntracks']
-                event_n_ext_trigs[0] = f['events'][track['event_ref']]['n_ext_trigs']
+                event_nhits[0]       = f['events'][track['event_ref']]['nhit'][0]
+                event_q[0]           = f['events'][track['event_ref']]['q'][0]
+                event_q_raw[0]       = f['events'][track['event_ref']]['q_raw'][0]
+                event_ntracks[0]     = f['events'][track['event_ref']]['ntracks'][0]
+                event_n_ext_trigs[0] = f['events'][track['event_ref']]['n_ext_trigs'][0]
+                event_n_ext_trigs[0] = f['events'][track['event_ref']]['n_ext_trigs'][0]
+                for hit in range(f['events'][track['event_ref']]['nhit'][0]):
+                    hit_reference = f['events'][track['event_ref']]['hit_ref'][0]
+                    #print ' == hit_reference: ', hit_reference
+                    #print ' == x:  ', f['hits'][hit_reference]['px'][hit]
+                    #print ' == y:  ', f['hits'][hit_reference]['py'][hit]
+                    #print ' == ts: ', f['hits'][hit_reference]['ts'][hit]
+                    #print ' == q:  ', f['hits'][hit_reference]['q'][hit]
+                    event_hits_x[hit]  = f['hits'][hit_reference]['px'][hit]
+                    event_hits_y[hit]  = f['hits'][hit_reference]['py'][hit]
+                    event_hits_ts[hit] = f['hits'][hit_reference]['ts'][hit]
+                    event_hits_q[hit]  = f['hits'][hit_reference]['q'][hit]
 
                 trackID[0]           = track['track_id']
+                track_nhits[0]       = track['nhit']
                 track_start_pos_x[0] = track['start'][0]
                 track_start_pos_y[0] = track['start'][1]
                 track_start_pos_z[0] = track['start'][2]
@@ -440,6 +479,15 @@ def main(argv=None):
                 track_nhits[0]       = track['nhit']
                 track_q[0]           = track['q']
                 track_q_raw[0]       = track['q_raw']
+                for hit in range(track['nhit']):
+                    track_hits_x[hit]  = f['hits'][track['hit_ref']]['px'][hit]
+                    track_hits_y[hit]  = f['hits'][track['hit_ref']]['py'][hit]
+                    track_hits_ts[hit] = f['hits'][track['hit_ref']]['ts'][hit]
+                    track_hits_q[hit]  = f['hits'][track['hit_ref']]['q'][hit]
+                    #print ' hit: ', hit, ' \t x: ', f['hits'][track['hit_ref']]['px'][hit]
+                    #print ' hit: ', hit, ' \t y: ', f['hits'][track['hit_ref']]['py'][hit]
+                    #print ' hit: ', hit, ' \t t: ', f['hits'][track['hit_ref']]['ts'][hit]
+                    #print ' hit: ', hit, ' \t q: ', f['hits'][track['hit_ref']]['q'][hit]
 
                 #trigId               = f['ext_trigs'][f['events'][track['event_ref']]['ext_trig_ref']]['trig_id']
                 #trig_type            = f['ext_trigs'][f['events'][track['event_ref']]['ext_trig_ref']]['trig_type']
@@ -461,7 +509,7 @@ def main(argv=None):
 
                 # Fill to output_tree
                 output_tree.Fill()
-            
+
                 if track_index%2000 == 0:
                     print ' Processed track', track_index, 'of', len(f['tracks'][good_track_mask])
 

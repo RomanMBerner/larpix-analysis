@@ -153,7 +153,7 @@ def plot_event_ts(events,folder_name):
     n_bins = 50
     plt.hist(events['ts_start'], label='ts_start', bins=np.linspace(t_min,t_max,n_bins), histtype='step')
     plt.hist(events['ts_end'],   label='ts_end',   bins=np.linspace(t_min,t_max,n_bins), histtype='step')
-    plt.xlabel('Event Timestamp [???]')
+    plt.xlabel('Event Timestamp [s]')
     plt.ylabel('Entries [-]')
     plt.legend(loc=[0.75,0.85], prop={'size': 10})
     plt.savefig(str(folder_name)+'/timestamps.png')
@@ -166,7 +166,7 @@ def plot_event_durations(events,folder_name):
     t_max = np.max((events['ts_end']-events['ts_start']))
     n_bins = 50
     plt.hist((events['ts_end']-events['ts_start']), label='ts_end - ts_start', bins=np.linspace(t_min,t_max,n_bins), histtype='step')
-    plt.xlabel('Event Duration [???]')
+    plt.xlabel('Event Duration [0.1 us]')
     plt.ylabel('Entries [-]')
     plt.legend(loc=[0.6,0.85], prop={'size': 10})
     plt.savefig(str(folder_name)+'/durations.png')
@@ -444,7 +444,7 @@ def plot_track_duration(all_tracks,masked_tracks,folder_name):
     plt.close()
 
 
-'''    
+'''
 def plot_track_hit_fraction(all_tracks,masked_tracks):
     plt.figure('track hit fraction')
     x_min = np.min(all_tracks['phi'])
