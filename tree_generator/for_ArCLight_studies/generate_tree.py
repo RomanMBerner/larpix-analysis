@@ -147,7 +147,7 @@ def main(argv=None):
         event_n_ext_trigs    = array('i',[0])           # number of external triggers [-]
 	event_hits_x         = array('f',[0.]*MAXHITS)  # events hit coordinates (x)
         event_hits_y         = array('f',[0.]*MAXHITS)  # events hit coordinates (y)
-	event_hits_ts        = array('f',[0.]*MAXHITS)  # events hit coordinates (timestamp)
+        event_hits_ts        = array('i',[0.]*MAXHITS)  # events hit coordinates (timestamp) # TODO: Put z coordinate
 	event_hits_q         = array('f',[0.]*MAXHITS)  # events hit charge (ke)
 
         # Track informations
@@ -172,7 +172,7 @@ def main(argv=None):
         track_residual_z     = array('f',[0.])          # track residual z
         track_hits_x         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (x)
         track_hits_y         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (y)
-        track_hits_ts        = array('f',[0.]*MAXHITS)  # tracks hit coordinates (timestamp)
+        track_hits_ts        = array('i',[0.]*MAXHITS)  # tracks hit coordinates (timestamp) # TODO: Put z coordinate
         track_hits_q         = array('f',[0.]*MAXHITS)  # tracks hit charge (ke)
 
         # External Trigger informations
@@ -192,7 +192,7 @@ def main(argv=None):
         output_tree.Branch("event_n_ext_trigs" ,event_n_ext_trigs ,"event_n_ext_trigs/I")
 	output_tree.Branch("event_hits_x"      ,event_hits_x      ,"event_hits_x[event_nhits]/F")
 	output_tree.Branch("event_hits_y"      ,event_hits_y      ,"event_hits_y[event_nhits]/F")
-	output_tree.Branch("event_hits_ts"     ,event_hits_ts     ,"event_hits_ts[event_nhits]/F")
+	output_tree.Branch("event_hits_ts"     ,event_hits_ts     ,"event_hits_ts[event_nhits]/I")
 	output_tree.Branch("event_hits_q"      ,event_hits_q      ,"event_hits_q[event_nhits]/F")
 
         # Tracks
@@ -217,7 +217,7 @@ def main(argv=None):
         output_tree.Branch("track_residual_z" ,track_residual_z ,"track_residual_z/F")
         output_tree.Branch("track_hits_x"     ,track_hits_x     ,"track_hits_x[track_nhits]/F")
         output_tree.Branch("track_hits_y"     ,track_hits_y     ,"track_hits_y[track_nhits]/F")
-        output_tree.Branch("track_hits_ts"    ,track_hits_ts    ,"track_hits_ts[track_nhits]/F")
+        output_tree.Branch("track_hits_ts"    ,track_hits_ts    ,"track_hits_ts[track_nhits]/I")
         output_tree.Branch("track_hits_q"     ,track_hits_q     ,"track_hits_q[track_nhits]/F")
 
         # External Triggers
