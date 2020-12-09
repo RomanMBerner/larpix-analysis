@@ -148,7 +148,7 @@ def main(argv=None):
 	event_hits_x         = array('f',[0.]*MAXHITS)  # events hit coordinates (x)
         event_hits_y         = array('f',[0.]*MAXHITS)  # events hit coordinates (y)
         event_hits_z         = array('f',[0.]*MAXHITS)  # events hit coordinates (z)
-        event_hits_ts        = array('f',[0.]*MAXHITS)  # events hit coordinates (timestamp)
+        event_hits_ts        = array('i',[0]*MAXHITS)  # events hit coordinates (timestamp)
 	event_hits_q         = array('f',[0.]*MAXHITS)  # events hit charge (ke)
 
         # Track informations
@@ -174,7 +174,7 @@ def main(argv=None):
         track_hits_x         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (x)
         track_hits_y         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (y)
         track_hits_z         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (z)
-        track_hits_ts        = array('f',[0.]*MAXHITS)  # tracks hit coordinates (timestamp)
+        track_hits_ts        = array('i',[0]*MAXHITS)  # tracks hit coordinates (timestamp)
         track_hits_q         = array('f',[0.]*MAXHITS)  # tracks hit charge (ke)
 
         # External Trigger informations
@@ -540,7 +540,7 @@ def main(argv=None):
         # ---------------------------------------------------------
         output_file.cd()
         output_tree.Write()
-        print ' Data has been written to %s ' %(outputpath + '/' + outFileName)
+        print '\n Data has been written to %s ' %(outputpath + '/' + outFileName)
 
 
 if __name__ == "__main__":
