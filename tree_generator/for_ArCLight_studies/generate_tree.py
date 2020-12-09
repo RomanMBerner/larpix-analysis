@@ -95,8 +95,8 @@ def main(argv=None):
     for file_number in range(len(files)):
 
         # Only process specific files
-        #if files[file_number] != 'datalog_2020_11_27_08_07_55_CET_evd.h5':
-        #    continue
+        if files[file_number] != 'datalog_2020_11_29_12_22_02_CET_evd.h5':
+            continue
 
         #if not (file_number >= 0 and file_number < 10):
         #    continue
@@ -147,7 +147,8 @@ def main(argv=None):
         event_n_ext_trigs    = array('i',[0])           # number of external triggers [-]
 	event_hits_x         = array('f',[0.]*MAXHITS)  # events hit coordinates (x)
         event_hits_y         = array('f',[0.]*MAXHITS)  # events hit coordinates (y)
-        event_hits_ts        = array('i',[0.]*MAXHITS)  # events hit coordinates (timestamp) # TODO: Put z coordinate
+        event_hits_z         = array('f',[0.]*MAXHITS)  # events hit coordinates (z)
+        event_hits_ts        = array('f',[0.]*MAXHITS)  # events hit coordinates (timestamp)
 	event_hits_q         = array('f',[0.]*MAXHITS)  # events hit charge (ke)
 
         # Track informations
@@ -172,7 +173,8 @@ def main(argv=None):
         track_residual_z     = array('f',[0.])          # track residual z
         track_hits_x         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (x)
         track_hits_y         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (y)
-        track_hits_ts        = array('i',[0.]*MAXHITS)  # tracks hit coordinates (timestamp) # TODO: Put z coordinate
+        track_hits_z         = array('f',[0.]*MAXHITS)  # tracks hit coordinates (z)
+        track_hits_ts        = array('f',[0.]*MAXHITS)  # tracks hit coordinates (timestamp)
         track_hits_q         = array('f',[0.]*MAXHITS)  # tracks hit charge (ke)
 
         # External Trigger informations
@@ -192,6 +194,7 @@ def main(argv=None):
         output_tree.Branch("event_n_ext_trigs" ,event_n_ext_trigs ,"event_n_ext_trigs/I")
 	output_tree.Branch("event_hits_x"      ,event_hits_x      ,"event_hits_x[event_nhits]/F")
 	output_tree.Branch("event_hits_y"      ,event_hits_y      ,"event_hits_y[event_nhits]/F")
+	output_tree.Branch("event_hits_z"      ,event_hits_z      ,"event_hits_z[event_nhits]/F")
 	output_tree.Branch("event_hits_ts"     ,event_hits_ts     ,"event_hits_ts[event_nhits]/I")
 	output_tree.Branch("event_hits_q"      ,event_hits_q      ,"event_hits_q[event_nhits]/F")
 
@@ -217,6 +220,7 @@ def main(argv=None):
         output_tree.Branch("track_residual_z" ,track_residual_z ,"track_residual_z/F")
         output_tree.Branch("track_hits_x"     ,track_hits_x     ,"track_hits_x[track_nhits]/F")
         output_tree.Branch("track_hits_y"     ,track_hits_y     ,"track_hits_y[track_nhits]/F")
+        output_tree.Branch("track_hits_z"     ,track_hits_z     ,"track_hits_z[track_nhits]/F")
         output_tree.Branch("track_hits_ts"    ,track_hits_ts    ,"track_hits_ts[track_nhits]/I")
         output_tree.Branch("track_hits_q"     ,track_hits_q     ,"track_hits_q[track_nhits]/F")
 
@@ -426,14 +430,24 @@ def main(argv=None):
                 if f['events'][track['event_ref']]['evid'][0] not in event_IDs_externally_triggered:
                     continue
                 '''
-                print ' track_index:  ', track_index
-                print ' track:        ', track
-                print ' event ID:     ', f['events'][track['event_ref']]['evid'][0]
-                print ' track ID:     ', track['track_id']
-                print ' tr start:     ', track['start']
-                print ' tr end:       ', track['end']
-                print ' tr start-end: ', track['start']-track['end']
-                print ' tr. lenght:   ', track['length']
+                print ' track_index:    ', track_index
+                print ' track:          ', track
+                print ' event ID:       ', f['events'][track['event_ref']]['evid'][0]
+                print ' track ID:       ', track['track_id']
+                print ' event unix ts:  ', f['events'][track['event_ref']]['unix_ts'][0]
+                print ' event start t:  ', f['events'][track['event_ref']]['ts_start'][0]
+                print ' event end   t:  ', f['events'][track['event_ref']]['ts_end'][0]
+                print ' event duration: ', f['events'][track['event_ref']]['ts_end'][0] -\
+                                           f['events'][track['event_ref']]['ts_start'][0]
+                print ' track start t:  ', track['start'][3]
+                print ' track end t:    ', track['end'][3]
+                print ' track start z:  ', track['start'][2]
+                print ' track end z:    ', track['end'][2]
+                print ' track ID:       ', track['track_id']
+                print ' tr start:       ', track['start']
+                print ' tr end:         ', track['end']
+                print ' tr start-end:   ', track['start']-track['end']
+                print ' tr. lenght:     ', track['length']
                 '''
 
                 eventID[0]           = f['events'][track['event_ref']]['evid'][0]
@@ -441,6 +455,9 @@ def main(argv=None):
                 event_end_t[0]       = f['events'][track['event_ref']]['ts_end'][0]
                 event_duration[0]    = f['events'][track['event_ref']]['ts_end'][0] -\
                                        f['events'][track['event_ref']]['ts_start'][0]
+                #print ' start:    ', event_start_t[0]
+                #print ' end:      ', event_end_t[0]
+                #print ' duration: ', event_duration[0]
                 event_unix_ts[0]     = f['events'][track['event_ref']]['unix_ts']
                 event_nhits[0]       = f['events'][track['event_ref']]['nhit'][0]
                 event_q[0]           = f['events'][track['event_ref']]['q'][0]
@@ -453,10 +470,12 @@ def main(argv=None):
                     #print ' == hit_reference: ', hit_reference
                     #print ' == x:  ', f['hits'][hit_reference]['px'][hit]
                     #print ' == y:  ', f['hits'][hit_reference]['py'][hit]
+                    #print ' == z:  ', f['hits'][hit_reference]['pz'][hit]
                     #print ' == ts: ', f['hits'][hit_reference]['ts'][hit]
                     #print ' == q:  ', f['hits'][hit_reference]['q'][hit]
                     event_hits_x[hit]  = f['hits'][hit_reference]['px'][hit]
                     event_hits_y[hit]  = f['hits'][hit_reference]['py'][hit]
+                    event_hits_z[hit]  = f['hits'][hit_reference]['pz'][hit]
                     event_hits_ts[hit] = f['hits'][hit_reference]['ts'][hit]
                     event_hits_q[hit]  = f['hits'][hit_reference]['q'][hit]
 
@@ -482,10 +501,12 @@ def main(argv=None):
                 for hit in range(track['nhit']):
                     track_hits_x[hit]  = f['hits'][track['hit_ref']]['px'][hit]
                     track_hits_y[hit]  = f['hits'][track['hit_ref']]['py'][hit]
+                    track_hits_z[hit]  = f['hits'][track['hit_ref']]['pz'][hit]
                     track_hits_ts[hit] = f['hits'][track['hit_ref']]['ts'][hit]
                     track_hits_q[hit]  = f['hits'][track['hit_ref']]['q'][hit]
                     #print ' hit: ', hit, ' \t x: ', f['hits'][track['hit_ref']]['px'][hit]
                     #print ' hit: ', hit, ' \t y: ', f['hits'][track['hit_ref']]['py'][hit]
+                    #print ' hit: ', hit, ' \t z: ', f['hits'][track['hit_ref']]['pz'][hit]
                     #print ' hit: ', hit, ' \t t: ', f['hits'][track['hit_ref']]['ts'][hit]
                     #print ' hit: ', hit, ' \t q: ', f['hits'][track['hit_ref']]['q'][hit]
 
