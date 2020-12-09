@@ -531,8 +531,9 @@ def main(argv=None):
                 # Fill to output_tree
                 output_tree.Fill()
 
-                if track_index%2000 == 0:
-                    print ' Processed track', track_index, 'of', len(f['tracks'][good_track_mask])
+                if track_index%10 == 0:
+                    sys.stdout.write('\r Processed track ' + str(track_index) + ' of ' + str(len(f['tracks'][good_track_mask])))
+                    sys.stdout.flush()
 
 
         # Write output_tree
