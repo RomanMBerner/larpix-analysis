@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3.8
 
 ############################################################################################
 # Description:                                                                             #
-# This (Python 2) script can be run over event-built data files.                           #
+# This (Python 3.8) script can be run over event-built data files.                         #
 # It will generate ROOT trees which will be used for ArCLight studies/characterization.    #
 # An event-built datafile is produced from the raw data file:                              #
 # - Packets are time ordered, filtered on trigger type, etc.                               #
@@ -26,7 +26,6 @@ import os
 import ROOT
 from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH1D, TH2F, TH2D, TH1, TLine, TF1, TRandom3
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle
-import scipy.stats
 import time
 
 import matplotlib as mpl
@@ -76,16 +75,16 @@ def main(argv=None):
     # ============================================================
     # Set paths
     # ============================================================
-    datapath = '/home/lhep/PACMAN/DAQ/SingleModule_Nov2020/dataRuns/convertedData'
-    print ' datapath: ', datapath
+    datapath = '/data/SingleModule_Nov2020/LArPix/dataRuns/convertedData'
+    print(' Datapath: ', datapath)
 
-    outputpath = '/home/lhep/PACMAN/DAQ/SingleModule_Nov2020/dataRuns/rootTrees'
-    print ' outputpath: ', outputpath
+    outputpath = '/data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees'
+    print(' Outputpath: ', outputpath)
 
     files = sorted([os.path.basename(path) for path in glob.glob(datapath+'/*.h5')])
-    print ' datafiles: '
+    print(' Datafiles: ')
     for f in files:
-        print '\t ', f
+        print(' \t ', f)
 
 
     # ============================================================
@@ -106,11 +105,11 @@ def main(argv=None):
         # Define if plots are made or not
         make_plots = False
 
-        print ' -------------------------------------- '
-        print ' Processing file', inputFileName
+        print(' -------------------------------------- ')
+        print(' Processing file', inputFileName)
         outFileName = inputFileName[:-7] + '.root'
 
-        print ' Write data to: %s ' %(outputpath + '/' + outFileName)
+        print(' Write data to: %s ' %(outputpath + '/' + outFileName))
         output_file = ROOT.TFile((outputpath + '/' + outFileName), "RECREATE")
         output_tree = ROOT.TTree("tracks", "tracks")
 
@@ -125,7 +124,7 @@ def main(argv=None):
                 os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName)+'/track_analysis')
                 os.system('mkdir '+str(outputpath)+'/plots/'+str(output_folderName)+'/track_displays')
             except:
-                print ' --- WARNING: Exception in os commands --- '
+                print(' --- WARNING: Exception in os commands --- ')
                 pass
 
         #os.system('ls /data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/')
@@ -145,11 +144,11 @@ def main(argv=None):
         event_q_raw          = array('f',[0.])          # total deposited raw charge [ke]
         event_ntracks        = array('i',[0])           # number of tracks [-]
         event_n_ext_trigs    = array('i',[0])           # number of external triggers [-]
-	event_hits_x         = array('f',[0.]*MAXHITS)  # events hit coordinates (x)
+        event_hits_x         = array('f',[0.]*MAXHITS)  # events hit coordinates (x)
         event_hits_y         = array('f',[0.]*MAXHITS)  # events hit coordinates (y)
         event_hits_z         = array('f',[0.]*MAXHITS)  # events hit coordinates (z)
         event_hits_ts        = array('i',[0]*MAXHITS)  # events hit coordinates (timestamp)
-	event_hits_q         = array('f',[0.]*MAXHITS)  # events hit charge (ke)
+        event_hits_q         = array('f',[0.]*MAXHITS)  # events hit charge (ke)
 
         # Track informations
         trackID              = array('i',[0])
@@ -192,11 +191,11 @@ def main(argv=None):
         output_tree.Branch("event_q_raw"       ,event_q_raw       ,"event_q_raw/F")
         output_tree.Branch("event_ntracks"     ,event_ntracks     ,"event_ntracks/I")
         output_tree.Branch("event_n_ext_trigs" ,event_n_ext_trigs ,"event_n_ext_trigs/I")
-	output_tree.Branch("event_hits_x"      ,event_hits_x      ,"event_hits_x[event_nhits]/F")
-	output_tree.Branch("event_hits_y"      ,event_hits_y      ,"event_hits_y[event_nhits]/F")
-	output_tree.Branch("event_hits_z"      ,event_hits_z      ,"event_hits_z[event_nhits]/F")
-	output_tree.Branch("event_hits_ts"     ,event_hits_ts     ,"event_hits_ts[event_nhits]/I")
-	output_tree.Branch("event_hits_q"      ,event_hits_q      ,"event_hits_q[event_nhits]/F")
+        output_tree.Branch("event_hits_x"      ,event_hits_x      ,"event_hits_x[event_nhits]/F")
+        output_tree.Branch("event_hits_y"      ,event_hits_y      ,"event_hits_y[event_nhits]/F")
+        output_tree.Branch("event_hits_z"      ,event_hits_z      ,"event_hits_z[event_nhits]/F")
+        output_tree.Branch("event_hits_ts"     ,event_hits_ts     ,"event_hits_ts[event_nhits]/I")
+        output_tree.Branch("event_hits_q"      ,event_hits_q      ,"event_hits_q[event_nhits]/F")
 
         # Tracks
         output_tree.Branch("trackID"          ,trackID          ,"trackID/I")
@@ -234,16 +233,16 @@ def main(argv=None):
         # ============================================================
         f = h5py.File(os.path.join(datapath,inputFileName),'r')
 
-        #print 'File has keys: ', [key for key in f.keys()]
+        #print('File has keys: ', [key for key in f.keys()])
         events    = f['events']
         hits      = f['hits']
         info      = f['info']
         tracks    = f['tracks']
         ext_trigs = f['ext_trigs']
-        print ' n events:    ', len(events)
-        print ' n hits:      ', len(hits)
-        print ' n tracks:    ', len(tracks)
-        print ' n ext_trigs: ', len(ext_trigs)
+        print(' n events:    ', len(events))
+        print(' n hits:      ', len(hits))
+        print(' n tracks:    ', len(tracks))
+        print(' n ext_trigs: ', len(ext_trigs))
 
 
         # Loop over all events
@@ -252,20 +251,20 @@ def main(argv=None):
             event = f['events'][ev_index]
             if ev_index >= 0:
                 break
-            print ' ---- '
-            print ' Event ID:              ', event['evid']
-            print ' Event n hits:          ', event['nhit']
-            print ' Event n tracks:        ', event['ntracks']
-            print ' Event hit_ref:         ', event['hit_ref']
-            print ' Event track_ref:       ', event['track_ref']
-            print ' Event Q:               ', event['q']
-            print ' Event Q raw:           ', event['q_raw']
-            print ' Event ts_start:        ', event['ts_start']
-            print ' Event ts_end:          ', event['ts_end']
-            print ' Event duration:        ', event['ts_end'] - event['ts_start']
-            print ' Event unix ts:         ', event['unix_ts']
-            print ' Event n_ext_trigs:     ', event['n_ext_trigs']
-            print ' Event ext_trig_ref:    ', event['ext_trig_ref']
+            print(' ---- ')
+            print(' Event ID:              ', event['evid'])
+            print(' Event n hits:          ', event['nhit'])
+            print(' Event n tracks:        ', event['ntracks'])
+            print(' Event hit_ref:         ', event['hit_ref'])
+            print(' Event track_ref:       ', event['track_ref'])
+            print(' Event Q:               ', event['q'])
+            print(' Event Q raw:           ', event['q_raw'])
+            print(' Event ts_start:        ', event['ts_start'])
+            print(' Event ts_end:          ', event['ts_end'])
+            print(' Event duration:        ', event['ts_end'] - event['ts_start'])
+            print(' Event unix ts:         ', event['unix_ts'])
+            print(' Event n_ext_trigs:     ', event['n_ext_trigs'])
+            print(' Event ext_trig_ref:    ', event['ext_trig_ref'])
 
         # Plot event summaries
         if make_plots:
@@ -281,25 +280,26 @@ def main(argv=None):
             track = f['tracks'][track_index]
             if track_index >= 0:
                 break
-            print ' ---- '
-            print ' Track ID:              ', track['track_id']
-            print ' Track event_ref:       ', track['event_ref']
-            print ' Track hit_ref:         ', track['hit_ref']
-            print ' Track xp:              ', track['xp']
-            print ' Track yp:              ', track['yp']
-            print ' Track start:           ', track['start']
-            print ' Track end:             ', track['end']
-            print ' Track nhit:            ', track['nhit']
-            print ' Track Q:               ', track['q']
-            print ' Track Q raw:           ', track['q_raw']
-            print ' Track ts_start:        ', track['ts_start']
-            print ' Track ts_end:          ', track['ts_end']
-            print ' Track duration:        ', track['ts_end']-track['ts_start']
-            print ' Track lenght:          ', track['length']
-            print ' Track theta:           ', track['theta']
-            print ' Track phi:             ', track['phi']
-            print ' Track residual:        ', track['residual']
-
+            '''
+            print(' ---- ')
+            print(' Track ID:              ', track['track_id'])
+            print(' Track event_ref:       ', track['event_ref'])
+            print(' Track hit_ref:         ', track['hit_ref'])
+            print(' Track xp:              ', track['xp'])
+            print(' Track yp:              ', track['yp'])
+            print(' Track start:           ', track['start'])
+            print(' Track end:             ', track['end'])
+            print(' Track nhit:            ', track['nhit'])
+            print(' Track Q:               ', track['q'])
+            print(' Track Q raw:           ', track['q_raw'])
+            print(' Track ts_start:        ', track['ts_start'])
+            print(' Track ts_end:          ', track['ts_end'])
+            print(' Track duration:        ', track['ts_end']-track['ts_start'])
+            print(' Track lenght:          ', track['length'])
+            print(' Track theta:           ', track['theta'])
+            print(' Track phi:             ', track['phi'])
+            print(' Track residual:        ', track['residual'])
+            '''
 
         # Loop over external triggers and put event_IDs to list
         # ------------------------------------------
@@ -308,17 +308,17 @@ def main(argv=None):
         for trig_index in range(len(f['ext_trigs'])):
             trig = f['ext_trigs'][trig_index]
             '''
-            print ' ---- '
-            print ' Trigger trig_id:       ', trig['trig_id']
-            print ' Trigger event_ref:     ', trig['event_ref']
-            print ' Trigger ts:            ', trig['ts']
-            print ' Trigger type:          ', trig['type']
-            print ' Trigger eventID:       ', f['events'][trig['event_ref']]['evid'][0]
-            print ' Trigger ntracks in ev: ', f['events'][trig['event_ref']]['ntracks']
+            print(' ---- ')
+            print(' Trigger trig_id:       ', trig['trig_id'])
+            print(' Trigger event_ref:     ', trig['event_ref'])
+            print(' Trigger ts:            ', trig['ts'])
+            print(' Trigger type:          ', trig['type'])
+            print(' Trigger eventID:       ', f['events'][trig['event_ref']]['evid'][0])
+            print(' Trigger ntracks in ev: ', f['events'][trig['event_ref']]['ntracks'])
             '''
             #if trig['type'] == 2:
             event_IDs_externally_triggered.append(f['events'][trig['event_ref']]['evid'][0])
-        #print ' eventIDs externally triggered: ', event_IDs_externally_triggered
+        #print(' eventIDs externally triggered: ', event_IDs_externally_triggered)
 
 
         # Draw externally triggered events
@@ -326,7 +326,7 @@ def main(argv=None):
         if make_plots:
             for evID_index in range(len(event_IDs_externally_triggered)):
                 event = f['events'][event_IDs_externally_triggered[evID_index]]
-                #print ' evID:       ', event['evid']
+                #print(' evID:       ', event['evid'])
                 hit_ref = event['hit_ref']
                 x = f['hits'][hit_ref]['px']
                 y = f['hits'][hit_ref]['py']
@@ -349,8 +349,8 @@ def main(argv=None):
         # Make track selection
         # ------------------------------------------
         good_track_mask = np.ones(len(f['tracks'])).astype(bool)
-        #print 'good_track_mask (', len(good_track_mask), '): ', good_track_mask
-        #print ' Track IDs of good tracks (', len(f['tracks']['track_id'][good_track_mask]), '): ', f['tracks']['track_id'][good_track_mask]
+        #print('good_track_mask (', len(good_track_mask), '): ', good_track_mask)
+        #print(' Track IDs of good tracks (', len(f['tracks']['track_id'][good_track_mask]), '): ', f['tracks']['track_id'][good_track_mask])
 
 
         if len(f['tracks']):
@@ -358,8 +358,8 @@ def main(argv=None):
             # ----------------
             nhit_cut = 50
             good_track_mask = np.logical_and(f['tracks']['nhit'] > nhit_cut, good_track_mask)
-            #print 'good_track_mask (', len(good_track_mask), '): ', good_track_mask
-            #print ' Track IDs (', len(f['tracks']['track_id'][good_track_mask]), '): ', f['tracks']['track_id'][good_track_mask]
+            #print('good_track_mask (', len(good_track_mask), '): ', good_track_mask)
+            #print(' Track IDs (', len(f['tracks']['track_id'][good_track_mask]), '): ', f['tracks']['track_id'][good_track_mask])
             #'''
             # length
             # ----------------
@@ -388,12 +388,12 @@ def main(argv=None):
             good_track_mask = np.logical_and(event_fraction > event_frac_cut, good_track_mask)
 
             # Only accept those tracks which have an external trigger:
-            print ' len(good_track_mask): ', len(good_track_mask)
+            print(' len(good_track_mask): ', len(good_track_mask))
             for track_index, track in enumerate(f['tracks']):
                 if f['events'][track['event_ref']]['evid'][0] in event_IDs_externally_triggered:
                     good_track_mask[track_index] = True
-                    #print ' ===== evID:    ', f['events'][track['event_ref']]['evid'][0]
-                    #print ' ===== trackID: ', track['track_id']
+                    #print(' ===== evID:    ', f['events'][track['event_ref']]['evid'][0])
+                    #print(' ===== trackID: ', track['track_id'])
                 else:
                     good_track_mask[track_index] = False
 
@@ -420,7 +420,7 @@ def main(argv=None):
         # Loop over all tracks in input file and fill output_tree
         # ------------------------------------------
         if len(f['tracks'][good_track_mask]) > 0:
-            print ' Number of selected tracks in file', inputFileName, ':', len(f['tracks'][good_track_mask])
+            print(' Number of selected tracks in file', inputFileName, ':', len(f['tracks'][good_track_mask]))
 
             for track_index, track in enumerate(f['tracks'][good_track_mask]):
                 #if track_index > 0:
@@ -430,24 +430,24 @@ def main(argv=None):
                 if f['events'][track['event_ref']]['evid'][0] not in event_IDs_externally_triggered:
                     continue
                 '''
-                print ' track_index:    ', track_index
-                print ' track:          ', track
-                print ' event ID:       ', f['events'][track['event_ref']]['evid'][0]
-                print ' track ID:       ', track['track_id']
-                print ' event unix ts:  ', f['events'][track['event_ref']]['unix_ts'][0]
-                print ' event start t:  ', f['events'][track['event_ref']]['ts_start'][0]
-                print ' event end   t:  ', f['events'][track['event_ref']]['ts_end'][0]
-                print ' event duration: ', f['events'][track['event_ref']]['ts_end'][0] -\
-                                           f['events'][track['event_ref']]['ts_start'][0]
-                print ' track start t:  ', track['start'][3]
-                print ' track end t:    ', track['end'][3]
-                print ' track start z:  ', track['start'][2]
-                print ' track end z:    ', track['end'][2]
-                print ' track ID:       ', track['track_id']
-                print ' tr start:       ', track['start']
-                print ' tr end:         ', track['end']
-                print ' tr start-end:   ', track['start']-track['end']
-                print ' tr. lenght:     ', track['length']
+                print(' track_index:    ', track_index)
+                print(' track:          ', track)
+                print(' event ID:       ', f['events'][track['event_ref']]['evid'][0])
+                print(' track ID:       ', track['track_id'])
+                print(' event unix ts:  ', f['events'][track['event_ref']]['unix_ts'][0])
+                print(' event start t:  ', f['events'][track['event_ref']]['ts_start'][0])
+                print(' event end   t:  ', f['events'][track['event_ref']]['ts_end'][0])
+                print(' event duration: ', f['events'][track['event_ref']]['ts_end'][0] -\
+                                           f['events'][track['event_ref']]['ts_start'][0])
+                print(' track start t:  ', track['start'][3])
+                print(' track end t:    ', track['end'][3])
+                print(' track start z:  ', track['start'][2])
+                print(' track end z:    ', track['end'][2])
+                print(' track ID:       ', track['track_id'])
+                print(' tr start:       ', track['start'])
+                print(' tr end:         ', track['end'])
+                print(' tr start-end:   ', track['start']-track['end'])
+                print(' tr. lenght:     ', track['length'])
                 '''
 
                 eventID[0]           = f['events'][track['event_ref']]['evid'][0]
@@ -455,10 +455,10 @@ def main(argv=None):
                 event_end_t[0]       = f['events'][track['event_ref']]['ts_end'][0]
                 event_duration[0]    = f['events'][track['event_ref']]['ts_end'][0] -\
                                        f['events'][track['event_ref']]['ts_start'][0]
-                #print ' start:    ', event_start_t[0]
-                #print ' end:      ', event_end_t[0]
-                #print ' duration: ', event_duration[0]
-                event_unix_ts[0]     = f['events'][track['event_ref']]['unix_ts']
+                #print(' start:    ', event_start_t[0])
+                #print(' end:      ', event_end_t[0])
+                #print(' duration: ', event_duration[0])
+                event_unix_ts[0]     = f['events'][track['event_ref']]['unix_ts'][0]
                 event_nhits[0]       = f['events'][track['event_ref']]['nhit'][0]
                 event_q[0]           = f['events'][track['event_ref']]['q'][0]
                 event_q_raw[0]       = f['events'][track['event_ref']]['q_raw'][0]
@@ -467,12 +467,12 @@ def main(argv=None):
                 event_n_ext_trigs[0] = f['events'][track['event_ref']]['n_ext_trigs'][0]
                 for hit in range(f['events'][track['event_ref']]['nhit'][0]):
                     hit_reference = f['events'][track['event_ref']]['hit_ref'][0]
-                    #print ' == hit_reference: ', hit_reference
-                    #print ' == x:  ', f['hits'][hit_reference]['px'][hit]
-                    #print ' == y:  ', f['hits'][hit_reference]['py'][hit]
-                    #print ' == z:  ', f['hits'][hit_reference]['pz'][hit]
-                    #print ' == ts: ', f['hits'][hit_reference]['ts'][hit]
-                    #print ' == q:  ', f['hits'][hit_reference]['q'][hit]
+                    #print(' == hit_reference: ', hit_reference)
+                    #print(' == x:  ', f['hits'][hit_reference]['px'][hit])
+                    #print(' == y:  ', f['hits'][hit_reference]['py'][hit])
+                    #print(' == z:  ', f['hits'][hit_reference]['pz'][hit])
+                    #print(' == ts: ', f['hits'][hit_reference]['ts'][hit])
+                    #print(' == q:  ', f['hits'][hit_reference]['q'][hit])
                     event_hits_x[hit]  = f['hits'][hit_reference]['px'][hit]
                     event_hits_y[hit]  = f['hits'][hit_reference]['py'][hit]
                     event_hits_z[hit]  = f['hits'][hit_reference]['pz'][hit]
@@ -504,11 +504,11 @@ def main(argv=None):
                     track_hits_z[hit]  = f['hits'][track['hit_ref']]['pz'][hit]
                     track_hits_ts[hit] = f['hits'][track['hit_ref']]['ts'][hit]
                     track_hits_q[hit]  = f['hits'][track['hit_ref']]['q'][hit]
-                    #print ' hit: ', hit, ' \t x: ', f['hits'][track['hit_ref']]['px'][hit]
-                    #print ' hit: ', hit, ' \t y: ', f['hits'][track['hit_ref']]['py'][hit]
-                    #print ' hit: ', hit, ' \t z: ', f['hits'][track['hit_ref']]['pz'][hit]
-                    #print ' hit: ', hit, ' \t t: ', f['hits'][track['hit_ref']]['ts'][hit]
-                    #print ' hit: ', hit, ' \t q: ', f['hits'][track['hit_ref']]['q'][hit]
+                    #print(' hit: ', hit, ' \t x: ', f['hits'][track['hit_ref']]['px'][hit])
+                    #print(' hit: ', hit, ' \t y: ', f['hits'][track['hit_ref']]['py'][hit])
+                    #print(' hit: ', hit, ' \t z: ', f['hits'][track['hit_ref']]['pz'][hit])
+                    #print(' hit: ', hit, ' \t t: ', f['hits'][track['hit_ref']]['ts'][hit])
+                    #print(' hit: ', hit, ' \t q: ', f['hits'][track['hit_ref']]['q'][hit])
 
                 #trigId               = f['ext_trigs'][f['events'][track['event_ref']]['ext_trig_ref']]['trig_id']
                 #trig_type            = f['ext_trigs'][f['events'][track['event_ref']]['ext_trig_ref']]['trig_type']
@@ -540,7 +540,7 @@ def main(argv=None):
         # ---------------------------------------------------------
         output_file.cd()
         output_tree.Write()
-        print '\n Data has been written to %s ' %(outputpath + '/' + outFileName)
+        print('\n Data has been written to %s ' %(outputpath + '/' + outFileName))
 
 
 if __name__ == "__main__":
