@@ -22,7 +22,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.random as random
-import os
+impor_z[hit]  = f['hits'][hit_reference]['pz'][hit]s
 import ROOT
 from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH1D, TH2F, TH2D, TH1, TLine, TF1, TRandom3
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle
@@ -36,9 +36,9 @@ from plot_functions import *
 
 # Import from other directories:
 import sys
-evd_libpath             = '/home/lhep/PACMAN/larpix-v2-testing-scripts/event-display/'
+#evd_libpath             = '/home/lhep/PACMAN/larpix-v2-testing-scripts/event-display/'
+#sys.path.append(evd_libpath)
 larpix_geometry_libpath = '/home/lhep/PACMAN/larpix-geometry/'
-sys.path.append(evd_libpath)
 sys.path.append(larpix_geometry_libpath)
 
 
@@ -75,10 +75,12 @@ def main(argv=None):
     # ============================================================
     # Set paths
     # ============================================================
-    datapath = '/data/SingleModule_Nov2020/LArPix/dataRuns/convertedData'
+    datapath = '/data/SingleCube_Oct2020/LArPix/dataRuns/convertedData'
+    #datapath = '/data/SingleModule_Nov2020/LArPix/dataRuns/convertedData'
     print(' Datapath: ', datapath)
 
-    outputpath = '/data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees'
+    outputpath = '/data/SingleCube_Oct2020/LArPix/dataRuns/rootTrees/without_light'
+    #outputpath = '/data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/without_light'
     print(' Outputpath: ', outputpath)
 
     files = sorted([os.path.basename(path) for path in glob.glob(datapath+'/*.h5')])
@@ -94,10 +96,31 @@ def main(argv=None):
     for file_number in range(len(files)):
 
         # Only process specific files
-        if files[file_number] != 'datalog_2020_11_29_12_22_02_CET_evd.h5':
+
+        # SingleCube
+        #if files[file_number] != 'datalog_2020_10_29_09_02_22_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_10_29_09_08_24_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_10_29_09_38_24_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_10_29_10_08_24_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_10_29_10_38_24_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_10_29_11_11_54_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_10_30_23_01_07_CET_evd.h5':
+        if files[file_number] != 'datalog_2020_10_30_23_37_11_CET_evd.h5':
             continue
 
-        #if not (file_number >= 0 and file_number < 10):
+        # SingleModule 
+        #if files[file_number] != 'datalog_2020_11_29_15_07_39_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_11_29_15_52_27_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_11_29_16_24_31_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_11_29_23_07_01_CET_evd.h5':
+        #if files[file_number] != 'datalog_2020_11_29_23_40_11_CET_evd.h5':
+        #    continue
+            
+        #if not (file_number >= 0 and file_number < 2):
+        #if not (file_number >= 2 and file_number < 4):
+        #if not (file_number >= 4 and file_number < 6):
+        #if not (file_number >= 6 and file_number < 8):
+        #if not (file_number >= 8 and file_number < 10):
         #    continue
 
         inputFileName = files[file_number]
@@ -466,18 +489,22 @@ def main(argv=None):
                 event_n_ext_trigs[0] = f['events'][track['event_ref']]['n_ext_trigs'][0]
                 event_n_ext_trigs[0] = f['events'][track['event_ref']]['n_ext_trigs'][0]
                 for hit in range(f['events'][track['event_ref']]['nhit'][0]):
-                    hit_reference = f['events'][track['event_ref']]['hit_ref'][0]
-                    #print(' == hit_reference: ', hit_reference)
-                    #print(' == x:  ', f['hits'][hit_reference]['px'][hit])
-                    #print(' == y:  ', f['hits'][hit_reference]['py'][hit])
-                    #print(' == z:  ', f['hits'][hit_reference]['pz'][hit])
-                    #print(' == ts: ', f['hits'][hit_reference]['ts'][hit])
-                    #print(' == q:  ', f['hits'][hit_reference]['q'][hit])
-                    event_hits_x[hit]  = f['hits'][hit_reference]['px'][hit]
-                    event_hits_y[hit]  = f['hits'][hit_reference]['py'][hit]
-                    event_hits_z[hit]  = f['hits'][hit_reference]['pz'][hit]
-                    event_hits_ts[hit] = f['hits'][hit_reference]['ts'][hit]
-                    event_hits_q[hit]  = f['hits'][hit_reference]['q'][hit]
+                    try:
+                        hit_reference = f['events'][track['event_ref']]['hit_ref'][0]
+                        #print(' == hit_reference: ', hit_reference)
+                        #print(' == x:  ', f['hits'][hit_reference]['px'][hit])
+                        #print(' == y:  ', f['hits'][hit_reference]['py'][hit])
+                        #print(' == z:  ', f['hits'][hit_reference]['pz'][hit])
+                        #print(' == ts: ', f['hits'][hit_reference]['ts'][hit])
+                        #print(' == q:  ', f['hits'][hit_reference]['q'][hit])
+                        event_hits_x[hit]  = f['hits'][hit_reference]['px'][hit]
+                        event_hits_y[hit]  = f['hits'][hit_reference]['py'][hit]
+                        event_hits_z[hit]  = f['hits'][hit_reference]['pz'][hit]*10
+                        event_hits_ts[hit] = f['hits'][hit_reference]['ts'][hit]
+                        event_hits_q[hit]  = f['hits'][hit_reference]['q'][hit]
+                    except:
+                        print(' WARNING: hit_reference not assigned, continue ... ')
+                        break
 
                 trackID[0]           = track['track_id']
                 track_nhits[0]       = track['nhit']
@@ -501,7 +528,7 @@ def main(argv=None):
                 for hit in range(track['nhit']):
                     track_hits_x[hit]  = f['hits'][track['hit_ref']]['px'][hit]
                     track_hits_y[hit]  = f['hits'][track['hit_ref']]['py'][hit]
-                    track_hits_z[hit]  = f['hits'][track['hit_ref']]['pz'][hit]
+                    track_hits_z[hit]  = f['hits'][track['hit_ref']]['pz'][hit]*10
                     track_hits_ts[hit] = f['hits'][track['hit_ref']]['ts'][hit]
                     track_hits_q[hit]  = f['hits'][track['hit_ref']]['q'][hit]
                     #print(' hit: ', hit, ' \t x: ', f['hits'][track['hit_ref']]['px'][hit])
