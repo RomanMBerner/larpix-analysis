@@ -474,7 +474,7 @@ def plot_LY_vs_GCx_selection(input_lists,x_bins,y_bins,axis_labels,save_name,cut
     plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
     plt.tick_params(labelsize=20)
     
-    plt.plot([-155, 155],[400,50])
+    plt.plot([-155, 155],[cut_at_xmin,cut_at_xmax])
 
     # Change label offset of axes
     from matplotlib import rcParams
