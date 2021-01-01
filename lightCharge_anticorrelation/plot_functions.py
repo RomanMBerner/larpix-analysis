@@ -209,7 +209,7 @@ def plot_h3_unweighted(input_lists,x_bins,y_bins,z_bins,axis_labels,save_name):
     plt.close()
     
     
-def plot_profile_of_2D_hist(gc_bin_i_list,ly_mean_bin_i_list,x_err,ly_std_bin_i_list,plot_folder_list,axis_labels,x_min,x_max,y_min,y_max,save_name):
+def plot_profile_of_2D_hist_00(gc_bin_i_list,ly_mean_bin_i_list,x_err,ly_std_bin_i_list,plot_folder_list,axis_labels,x_min,x_max,y_min,y_max,save_name,entries_list,plot_legend=True):
     # Size
     seaborn.set(rc={'figure.figsize':(12.3, 10),})
     seaborn.set_context('talk') # or paper
@@ -249,17 +249,63 @@ def plot_profile_of_2D_hist(gc_bin_i_list,ly_mean_bin_i_list,x_err,ly_std_bin_i_
 
     # TODO: Select representatives!
     # Don't plot all 10 series but restrict to a few only...
-    restrict_to_entries_1 = [1,5,9]
+    restrict_to_entries_1 = [2,5,9]
     #restrict_to_entries_2 = [0,4,8]
     #restrict_to_entries_3 = [2,3,6,7]
 
-    for i in range(10):
-        if i not in restrict_to_entries_1:
+    for i in range(len(gc_bin_i_list)):
+        if i not in entries_list:
             continue
         plt.errorbar(gc_bin_i_list[i], ly_mean_bin_i_list[i], xerr=x_err, yerr=ly_std_bin_i_list[i], fmt='o', label=plot_folder_list[i][0:3]+' kV/cm') # fmt='-o'
     
     # Legend
-    plt.legend(loc=[0.75,0.8], prop={'size': 17}) # loc='upper right'
+    if plot_legend:
+        plt.legend(loc=[0.75,0.8], prop={'size': 17}) # loc='upper right'
+    
+    # Save figure
+    plt.savefig(save_name, dpi=400) # bbox_inches='tight'
+    plt.close()
+    
+
+def plot_profile_of_2D_hist_01(x_vals,y_vals,x_err,y_err,axis_labels,x_min,x_max,y_min,y_max,save_name):
+    # Size
+    seaborn.set(rc={'figure.figsize':(12.3, 10),})
+    seaborn.set_context('talk') # or paper
+
+    # Define parameters of the frame
+    fig = plt.figure() # plt.figure(figsize=(width,height))
+    ax = fig.add_subplot(111)
+    ax.patch.set_alpha(0.0)
+    ax.spines['bottom'].set_color('0.5') #'black', ...
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['top'].set_color('0.5')
+    ax.spines['top'].set_linewidth(2)
+    ax.spines['top'].set_visible(True)
+    ax.spines['right'].set_color('0.5')
+    ax.spines['right'].set_linewidth(2)
+    ax.spines['right'].set_visible(True)
+    ax.spines['left'].set_color('0.5')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['left'].set_visible(True)
+
+    # Ticks, grid and ticks labels
+    ax.tick_params(direction='in', length=10, width=2,                  # direction, length and width of the ticks (in, out, inout)
+                   colors='0.5',                                       # color of the ticks ('black', '0.5')
+                   bottom=True, top=True, right=True, left=True,       # whether to draw the respective ticks
+                   zorder = 10.,                                       # tick and label zorder
+                   pad = 10.,                                          # distance between ticks and tick labels
+                   labelsize = 17,                                     # size of the tick labels
+                   labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
+    # Axis limits
+    ax.set_xlim((x_min,x_max))
+    ax.set_ylim((y_min,y_max))
+
+    # Axis labels
+    plt.xlabel(axis_labels[0], fontsize=20, labelpad=20)
+    plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
+
+    plt.errorbar(x_vals, y_vals, xerr=x_err, yerr=y_err, fmt='o') # fmt='-o'
     
     # Save figure
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
