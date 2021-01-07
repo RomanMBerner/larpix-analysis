@@ -60,7 +60,7 @@ def plot_h1(input_list,x_min,x_max,n_bins,axis_labels,save_name):
     plt.close()
     
     
-def plot_errorbars(x_vals,y_vals,x_err,y_err,x_min,x_max,axis_labels,save_name):
+def plot_errorbars(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
     seaborn.set(rc={'figure.figsize':(15, 10),})
     seaborn.set_context('talk') # or paper
 
@@ -91,8 +91,8 @@ def plot_errorbars(x_vals,y_vals,x_err,y_err,x_min,x_max,axis_labels,save_name):
                    labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
 
     # Axis limits
-    #ax.set_xlim((x_min,x_max))
-    #ax.set_ylim((y_min,y_max))
+    ax.set_xlim((x_min,x_max))
+    ax.set_ylim((y_min,y_max))
     
     plt.errorbar(x_vals, y_vals, xerr=x_err, yerr=y_err, fmt='o') # fmt='-o'
 
@@ -313,9 +313,9 @@ def plot_event_3D(input_lists,x_bins,y_bins,z_bins,axis_labels,save_name):
     plt.close()
     
 
-def func(x, a, b):
+def exponential_func(x, a, b):
     return a * np.exp(-x/b)
-#def func(x, a, b, c):
+#def exponential_func(x, a, b, c):
 #    return a * np.exp(-x/b) + c
     
     
@@ -326,7 +326,7 @@ def plot_eLifetime(x_vals,y_vals,\
                    x_min,x_max,y_min,y_max,\
                    save_name):
     
-    popt, pcov = curve_fit(func, x_vals, y_vals, p0=(150,1000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    popt, pcov = curve_fit(exponential_func, x_vals, y_vals, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
     #print(' popt: ', popt)
     #print(' pcov: ', pcov)
 
@@ -343,7 +343,7 @@ def plot_eLifetime(x_vals,y_vals,\
     #for i in range(0,math.ceil(popt[1])):
     for i in range(0,math.ceil(x_vals[-1])):
         fit_x.append(i)
-        fit_y.append(func(i,*popt))
+        fit_y.append(exponential_func(i,*popt))
     #print(' fit_y[0]: ', fit_y[0])
 
     # Size
@@ -392,5 +392,6 @@ def plot_eLifetime(x_vals,y_vals,\
     plt.legend()
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
     plt.close()
-
-print('Done')
+    #plt.show()
+        
+    return lifetime_us, lifetime_us_uncertainty
