@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy.optimize import curve_fit
 import seaborn
 
 def plot_h1(input_list,x_min,x_max,n_bins,axis_labels,save_name):
@@ -320,6 +321,59 @@ def plot_profile_of_2D_hist_01(x_vals,y_vals,x_err,y_err,\
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
     plt.close()
     
+    
+def plot_errorbars(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+    seaborn.set(rc={'figure.figsize':(15, 10),})
+    seaborn.set_context('talk') # or paper
+
+    # Define parameters of the frame
+    fig = plt.figure() # plt.figure(figsize=(width,height))
+    ax = fig.add_subplot(111)
+    ax.patch.set_alpha(0.0)
+    ax.spines['bottom'].set_color('0.5') #'black', ...
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['top'].set_color('0.5')
+    ax.spines['top'].set_linewidth(2)
+    ax.spines['top'].set_visible(True)
+    ax.spines['right'].set_color('0.5')
+    ax.spines['right'].set_linewidth(2)
+    ax.spines['right'].set_visible(True)
+    ax.spines['left'].set_color('0.5')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['left'].set_visible(True)
+
+    # Ticks, grid and ticks labels
+    ax.tick_params(direction='in', length=10, width=2,                 # direction, length and width of the ticks (in, out, inout)
+                   colors='0.5',                                       # color of the ticks ('black', '0.5')
+                   bottom=True, top=True, right=True, left=True,       # whether to draw the respective ticks
+                   zorder = 10.,                                       # tick and label zorder
+                   pad = 10.,                                          # distance between ticks and tick labels
+                   labelsize = 17,                                     # size of the tick labels
+                   labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
+
+    # Axis limits
+    ax.set_xlim((x_min,x_max))
+    ax.set_ylim((y_min,y_max))
+    
+    plt.errorbar(x_vals, y_vals, xerr=x_err, yerr=y_err, fmt='o') # fmt='-o'
+
+    # Legend
+    #plt.legend(loc=[0.75,0.85], prop={'size': 17}) # loc='upper right'
+
+    # Axis labels
+    plt.xlabel(axis_labels[0], fontsize=20, labelpad=20)
+    plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
+
+    # Logarithmic y axis
+    #plt.ylim(bottom=0.9) #, top=200)
+    #plt.yscale('linear') # linear, log
+
+    # Save figure
+    plt.savefig(save_name, dpi=400) # bbox_inches='tight'
+    plt.close()
+    
+    
 def plot_TGraphErr(x_vals,y_vals_list,x_err,y_err,series_label_list,axis_labels,x_min,x_max,y_min,y_max,save_name):
     # Size
     seaborn.set(rc={'figure.figsize':(12.3, 10),})
@@ -592,3 +646,81 @@ def plot_LY_vs_GCx_selection(input_lists,x_bins,y_bins,axis_labels,save_name,cut
     fig_name = 'h2_trackLength_vs_trackNHits.png'
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
     plt.close()
+    
+    
+def boxModel_func(E, Q0, beta):
+    return Q0 * E/beta * np.log(1.+beta/E)
+
+
+def plot_boxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+    seaborn.set(rc={'figure.figsize':(15, 10),})
+    seaborn.set_context('talk') # or paper
+    
+    popt, pcov = curve_fit(boxModel_func, x_vals, y_vals) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    #print(' popt: ', popt)
+    #print(' pcov: ', pcov)
+    
+    Q0 = popt[0]
+    Q0_err = np.sqrt(pcov[0][0])
+    beta = popt[1]
+    beta_err = np.sqrt(pcov[1][1])
+    print(' Q0:   ', Q0, ' +/- ', Q0_err)
+    print(' beta: ', beta, ' +/- ', beta_err)
+    
+    fit_x = []
+    fit_y = []
+    n_points = 100
+    for i in range(1,n_points+1):
+        E_i = i/n_points
+        fit_x.append(E_i)
+        fit_y.append(boxModel_func(E_i,*popt))
+
+    # Define parameters of the frame
+    fig = plt.figure() # plt.figure(figsize=(width,height))
+    ax = fig.add_subplot(111)
+    ax.patch.set_alpha(0.0)
+    ax.spines['bottom'].set_color('0.5') #'black', ...
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['top'].set_color('0.5')
+    ax.spines['top'].set_linewidth(2)
+    ax.spines['top'].set_visible(True)
+    ax.spines['right'].set_color('0.5')
+    ax.spines['right'].set_linewidth(2)
+    ax.spines['right'].set_visible(True)
+    ax.spines['left'].set_color('0.5')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['left'].set_visible(True)
+
+    # Ticks, grid and ticks labels
+    ax.tick_params(direction='in', length=10, width=2,                 # direction, length and width of the ticks (in, out, inout)
+                   colors='0.5',                                       # color of the ticks ('black', '0.5')
+                   bottom=True, top=True, right=True, left=True,       # whether to draw the respective ticks
+                   zorder = 10.,                                       # tick and label zorder
+                   pad = 10.,                                          # distance between ticks and tick labels
+                   labelsize = 17,                                     # size of the tick labels
+                   labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
+
+    # Axis limits
+    ax.set_xlim((x_min,x_max))
+    ax.set_ylim((y_min,y_max))
+    
+    plt.errorbar(x_vals,y_vals,xerr=x_err,yerr=y_err,fmt='o',label='Data') # fmt='-o'
+    plt.plot(fit_x,fit_y,'r-',label=r'Box Model Fit: $Q_0 = %3.1f \pm %3.1f , \beta = %3.3f \pm %3.3f$' %(Q0,Q0_err,beta,beta_err))
+
+    # Legend
+    plt.legend(loc=[0.4,0.08], prop={'size': 17})
+    #plt.legend(loc=[0.75,0.85], prop={'size': 17}) # loc='upper right', 'best'
+
+    # Axis labels
+    plt.xlabel(axis_labels[0], fontsize=20, labelpad=20)
+    plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
+
+    # Logarithmic y axis
+    #plt.ylim(bottom=0.9) #, top=200)
+    #plt.yscale('linear') # linear, log
+
+    # Save figure
+    plt.savefig(save_name, dpi=400) # bbox_inches='tight'
+    plt.close()
+    #plt.show()
