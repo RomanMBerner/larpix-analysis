@@ -324,19 +324,27 @@ def plot_eLifetime(x_vals,y_vals,\
                    eDrift_vel,\
                    axis_labels,\
                    x_min,x_max,y_min,y_max,\
-                   save_name):
-    
-    popt, pcov = curve_fit(exponential_func, x_vals, y_vals, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
-    #print(' popt: ', popt)
-    #print(' pcov: ', pcov)
+                   save_name,\
+                   x_coordinate_unit):
 
-    lifetime_mm = popt[1]
-    lifetime_mm_uncertainty = np.sqrt(pcov[1][1])
-    lifetime_us = lifetime_mm/eDrift_vel
-    lifetime_us_uncertainty = lifetime_mm_uncertainty/eDrift_vel
-    #print('lifetime [mm]: ', lifetime_mm, '\t +/-', lifetime_mm_uncertainty)
-    #print('lifetime [us]: ', lifetime_us, '\t +/-', lifetime_us_uncertainty)
-
+    if x_coordinate_unit=='mm':
+        popt, pcov = curve_fit(exponential_func, x_vals, y_vals, p0=(150,7000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+        #print(' popt: ', popt)
+        #print(' pcov: ', pcov)
+        lifetime = popt[1]
+        lifetime_uncertainty = np.sqrt(pcov[1][1])
+        #print('lifetime [mm]: ', lifetime, '\t +/-', lifetime_uncertainty)
+    elif x_coordinate_unit=='us':
+        popt, pcov = curve_fit(exponential_func, x_vals, y_vals, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+        #print(' popt: ', popt)
+        #print(' pcov: ', pcov)
+        lifetime = popt[1]/eDrift_vel
+        lifetime_uncertainty = np.sqrt(pcov[1][1])/eDrift_vel
+        #print('lifetime [us]: ', lifetime, '\t +/-', lifetime_uncertainty)
+    else:
+        print(' WARNING: x coordinate unit', x_coordinate_unit, 'not recognised...')
+        lifetime = 1.
+        lifetime_uncertainty = 1.
 
     fit_x = []
     fit_y = []
@@ -388,10 +396,17 @@ def plot_eLifetime(x_vals,y_vals,\
 
     #plt.figure()
     plt.errorbar(x_vals, y_vals, xerr=x_err, yerr=y_err, fmt='o', label='Data') # fmt='-o'
-    plt.plot(fit_x, fit_y, 'r-', label=r'Exponential fit: $\tau = %5.1f \mu s \pm %5.1f \mu s$' % (lifetime_us,lifetime_us_uncertainty))
+    if x_coordinate_unit == 'mm':
+        plt.plot(fit_x, fit_y, 'r-', label=r'Exponential fit: $\tau = %5.1f mm \pm %5.1f mm$' % (lifetime,lifetime_uncertainty))
+    elif x_coordinate_unit == 'us':
+        plt.plot(fit_x, fit_y, 'r-', label=r'Exponential fit: $\tau = %5.1f \mu s \pm %5.1f \mu s$' % (lifetime,lifetime_uncertainty))
+    else:
+        print(' WARNING: x coordinate unit', x_coordinate_unit, 'not recognised...')
+        plt.plot(fit_x, fit_y, 'r-', label=r'Exponential fit: $\tau = %5.1f UNIT? \pm %5.1f UNIT?$' % (lifetime,lifetime_uncertainty))
     plt.legend()
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
     plt.close()
     #plt.show()
         
-    return lifetime_us, lifetime_us_uncertainty
+    return lifetime, lifetime_uncertainty
+print('Done.')
