@@ -98,7 +98,7 @@ def plot_h2(input_lists,x_bins,y_bins,axis_labels,save_name):
                    #grid_linewidth=1.0,
     # colors='black','0.5'
 
-    plt.hist2d(input_lists[0], input_lists[1], bins=[x_bins,y_bins])#, cmap=plt.cm.viridis), weights=weights_list
+    plt.hist2d(input_lists[0], input_lists[1], bins=[x_bins,y_bins])#, cmap=plt.cm.viridis), weights=weights_list, vmin=0, vmax=1
     # Color maps: viridis, plasma, magma, inferno
 
     '''x = np.linspace(-0.5,10.5)
@@ -256,7 +256,7 @@ def plot_profile_of_2D_hist_00(gc_bin_i_list,ly_mean_bin_i_list,x_err,ly_std_bin
 
     # TODO: Select representatives!
     # Don't plot all 10 series but restrict to a few only...
-    restrict_to_entries_1 = [2,5,9]
+    #restrict_to_entries_1 = [2,5,9]
     #restrict_to_entries_2 = [0,4,8]
     #restrict_to_entries_3 = [2,3,6,7]
 
@@ -465,7 +465,7 @@ def plot_event_2D(input_lists,x_bins,y_bins,axis_labels,save_name):
                    #grid_linewidth=1.0,
     # colors='black','0.5'
 
-    plt.hist2d(input_lists[0], input_lists[1], weights=input_lists[2], bins=[x_bins,y_bins]) #, cmap=plt.hot())#, cmap=plt.cm.viridis)
+    plt.hist2d(input_lists[0], input_lists[1], weights=input_lists[2], bins=[x_bins,y_bins]) #, cmap=plt.hot())#, cmap=plt.cm.viridis), vmin=0, vmax=1
 
     # Colorbar
     #help(colorbar)
@@ -613,7 +613,7 @@ def plot_LY_vs_GCx_selection(input_lists,x_bins,y_bins,axis_labels,save_name,cut
                    #grid_linewidth=1.0,
     # colors='black','0.5'
 
-    plt.hist2d(input_lists[0], input_lists[1], bins=[x_bins,y_bins])#, cmap=plt.cm.viridis), weights=weights_list
+    plt.hist2d(input_lists[0], input_lists[1], bins=[x_bins,y_bins])#, cmap=plt.cm.viridis), weights=weights_list, vmin=0, vmax=1
     # Color maps: viridis, plasma, magma, inferno
 
     '''x = np.linspace(-0.5,10.5)
@@ -652,28 +652,55 @@ def boxModel_func(E, Q0, beta):
     return Q0 * E/beta * np.log(1.+beta/E)
 
 
-def plot_boxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+def birksModel_func(E, Q0, k):
+    dE_dx = 2.1
+    #rho_LAr = 1.40
+    #return 0.83 * Q0 / (1. + ((k/E*dE_dx)/(rho_LAr*E/1000.)))
+    A_ICARUS = 0.83
+    return A_ICARUS * Q0 / (1. + k/E*dE_dx)
+
+
+def plot_birksAndBoxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
     seaborn.set(rc={'figure.figsize':(15, 10),})
     seaborn.set_context('talk') # or paper
     
-    popt, pcov = curve_fit(boxModel_func, x_vals, y_vals) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
-    #print(' popt: ', popt)
-    #print(' pcov: ', pcov)
+    # Make box model fit
+    popt_boxModel, pcov_boxModel = curve_fit(boxModel_func, x_vals, y_vals) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    #print(' popt_boxModel: ', popt_boxModel)
+    #print(' pcov_boxModel: ', pcov_boxModel)
+    Q0_boxModel = popt_boxModel[0]
+    Q0_boxModel_err = np.sqrt(pcov_boxModel[0][0])
+    beta_boxModel = popt_boxModel[1]
+    beta_boxModel_err = np.sqrt(pcov_boxModel[1][1])
+    print(' Q0_boxModel:   ', Q0_boxModel,   ' +/- ', Q0_boxModel_err)
+    print(' beta_boxModel: ', beta_boxModel, ' +/- ', beta_boxModel_err)
     
-    Q0 = popt[0]
-    Q0_err = np.sqrt(pcov[0][0])
-    beta = popt[1]
-    beta_err = np.sqrt(pcov[1][1])
-    print(' Q0:   ', Q0, ' +/- ', Q0_err)
-    print(' beta: ', beta, ' +/- ', beta_err)
+    # Make birks model fit
+    popt_birksModel, pcov_birksModel = curve_fit(birksModel_func, x_vals, y_vals) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    #print(' popt_birksModel: ', popt_birksModel)
+    #print(' pcov_birksModel: ', pcov_birksModel)
+    Q0_birksModel     = popt_birksModel[0]
+    Q0_birksModel_err = np.sqrt(pcov_birksModel[0][0])
+    k_birksModel      = popt_birksModel[1]
+    k_birksModel_err  = np.sqrt(pcov_birksModel[1][1])
+    #A_birksModel      = popt_birksModel[2]
+    #A_birksModel_err  = np.sqrt(pcov_birksModel[2][2])
+    print(' Q0_birksModel: ', Q0_birksModel, ' +/- ', Q0_birksModel_err)
+    print(' k_birksModel:  ', k_birksModel,  ' +/- ', k_birksModel_err)
+    #print(' A_birksModel:  ', A_birksModel,  ' +/- ', A_birksModel_err)
     
-    fit_x = []
-    fit_y = []
+    # Produce fitted points
+    fit_boxModel_x   = []
+    fit_boxModel_y   = []
+    fit_birksModel_x = []
+    fit_birksModel_y = []
     n_points = 100
     for i in range(1,n_points+1):
         E_i = i/n_points
-        fit_x.append(E_i)
-        fit_y.append(boxModel_func(E_i,*popt))
+        fit_boxModel_x.append(E_i)
+        fit_boxModel_y.append(boxModel_func(E_i,*popt_boxModel))
+        fit_birksModel_x.append(E_i)
+        fit_birksModel_y.append(birksModel_func(E_i,*popt_birksModel))
 
     # Define parameters of the frame
     fig = plt.figure() # plt.figure(figsize=(width,height))
@@ -706,7 +733,8 @@ def plot_boxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,
     ax.set_ylim((y_min,y_max))
     
     plt.errorbar(x_vals,y_vals,xerr=x_err,yerr=y_err,fmt='o',label='Data') # fmt='-o'
-    plt.plot(fit_x,fit_y,'r-',label=r'Box Model Fit: $Q_0 = %3.1f \pm %3.1f , \beta = %3.3f \pm %3.3f$' %(Q0,Q0_err,beta,beta_err))
+    plt.plot(fit_boxModel_x,fit_boxModel_y,'r-',label=r'Box Model Fit: $Q_0 = %3.1f \pm %3.1f , \beta = %3.3f \pm %3.3f$' %(Q0_boxModel,Q0_boxModel_err,beta_boxModel,beta_boxModel_err))
+    plt.plot(fit_birksModel_x,fit_birksModel_y,'g-',label=r'Birks Model Fit: $Q_0 = %3.1f \pm %3.1f , k_E = %3.3f \pm %3.3f$' %(Q0_birksModel,Q0_birksModel_err,k_birksModel,k_birksModel_err))
 
     # Legend
     plt.legend(loc=[0.4,0.08], prop={'size': 17})
@@ -722,5 +750,8 @@ def plot_boxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,
 
     # Save figure
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
-    plt.close()
+    #plt.close()
     #plt.show()
+    
+    return Q0_boxModel, Q0_boxModel_err, beta_boxModel, beta_boxModel_err,\
+           Q0_birksModel, Q0_birksModel_err, k_birksModel, k_birksModel_err #, A_birksModel, A_birksModel_err
