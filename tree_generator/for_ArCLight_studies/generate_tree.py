@@ -22,7 +22,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.random as random
-impor_z[hit]  = f['hits'][hit_reference]['pz'][hit]s
+import os
 import ROOT
 from ROOT import TCanvas, TFile, TProfile, TNtuple, TH1F, TH1D, TH2F, TH2D, TH1, TLine, TF1, TRandom3
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle
@@ -75,12 +75,12 @@ def main(argv=None):
     # ============================================================
     # Set paths
     # ============================================================
-    datapath = '/data/SingleCube_Oct2020/LArPix/dataRuns/convertedData'
-    #datapath = '/data/SingleModule_Nov2020/LArPix/dataRuns/convertedData'
+    #datapath = '/data/SingleCube_Oct2020/LArPix/dataRuns/convertedData'
+    datapath = '/data/SingleModule_Nov2020/LArPix/dataRuns/convertedData'
     print(' Datapath: ', datapath)
 
-    outputpath = '/data/SingleCube_Oct2020/LArPix/dataRuns/rootTrees/without_light'
-    #outputpath = '/data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/without_light'
+    #outputpath = '/data/SingleCube_Oct2020/LArPix/dataRuns/rootTrees/without_light'
+    outputpath = '/data/SingleModule_Nov2020/LArPix/dataRuns/rootTrees/without_light/0_320_mm_drift'
     print(' Outputpath: ', outputpath)
 
     files = sorted([os.path.basename(path) for path in glob.glob(datapath+'/*.h5')])
@@ -97,6 +97,8 @@ def main(argv=None):
 
         # Only process specific files
 
+
+        # ===========================================================================
         # SingleCube
         #if files[file_number] != 'datalog_2020_10_29_09_02_22_CET_evd.h5':
         #if files[file_number] != 'datalog_2020_10_29_09_08_24_CET_evd.h5':
@@ -105,9 +107,12 @@ def main(argv=None):
         #if files[file_number] != 'datalog_2020_10_29_10_38_24_CET_evd.h5':
         #if files[file_number] != 'datalog_2020_10_29_11_11_54_CET_evd.h5':
         #if files[file_number] != 'datalog_2020_10_30_23_01_07_CET_evd.h5':
-        if files[file_number] != 'datalog_2020_10_30_23_37_11_CET_evd.h5':
-            continue
+        #if files[file_number] != 'datalog_2020_10_30_23_37_11_CET_evd.h5':
+        #    continue
+        # ===========================================================================
 
+         
+        # ===========================================================================
         # SingleModule 
         #if files[file_number] != 'datalog_2020_11_29_15_07_39_CET_evd.h5':
         #if files[file_number] != 'datalog_2020_11_29_15_52_27_CET_evd.h5':
@@ -116,12 +121,36 @@ def main(argv=None):
         #if files[file_number] != 'datalog_2020_11_29_23_40_11_CET_evd.h5':
         #    continue
             
-        #if not (file_number >= 0 and file_number < 2):
-        #if not (file_number >= 2 and file_number < 4):
-        #if not (file_number >= 4 and file_number < 6):
-        #if not (file_number >= 6 and file_number < 8):
-        #if not (file_number >= 8 and file_number < 10):
-        #    continue
+        if not (file_number >= 0 and file_number < 1):
+        #if not (file_number >= 1 and file_number < 2):
+        #if not (file_number >= 2 and file_number < 3):
+        #if not (file_number >= 3 and file_number < 4):
+        #if not (file_number >= 4 and file_number < 5):
+        #if not (file_number >= 5 and file_number < 6):
+        #if not (file_number >= 6 and file_number < 7):
+        #if not (file_number >= 7 and file_number < 8):
+        #if not (file_number >= 8 and file_number < 9):
+        #if not (file_number >= 9 and file_number < 10):
+        #if not (file_number >= 10 and file_number < 11):
+        #if not (file_number >= 11 and file_number < 12):
+        #if not (file_number >= 12 and file_number < 13):
+        #if not (file_number >= 13 and file_number < 14):
+        #if not (file_number >= 14 and file_number < 15):
+        #if not (file_number >= 15 and file_number < 16):
+        #if not (file_number >= 16 and file_number < 17):
+        #if not (file_number >= 17 and file_number < 18):
+        #if not (file_number >= 18 and file_number < 19):
+        #if not (file_number >= 19 and file_number < 20):
+        #if not (file_number >= 20 and file_number < 21):
+        #if not (file_number >= 21 and file_number < 22):
+        #if not (file_number >= 22 and file_number < 23):
+        #if not (file_number >= 23 and file_number < 24):
+        #if not (file_number >= 24 and file_number < 25):
+        #if not (file_number >= 25 and file_number < 26):
+        #if not (file_number >= 26 and file_number < 27):
+            continue
+        # ===========================================================================
+
 
         inputFileName = files[file_number]
 
@@ -386,7 +415,7 @@ def main(argv=None):
             #'''
             # length
             # ----------------
-            length_cut = 300
+            length_cut = 50
             good_track_mask = np.logical_and(f['tracks']['length'] > length_cut, good_track_mask)
             '''
             # charge
@@ -452,6 +481,7 @@ def main(argv=None):
                 # Only get those tracks where the event got externally triggered
                 if f['events'][track['event_ref']]['evid'][0] not in event_IDs_externally_triggered:
                     continue
+
                 '''
                 print(' track_index:    ', track_index)
                 print(' track:          ', track)
@@ -510,11 +540,11 @@ def main(argv=None):
                 track_nhits[0]       = track['nhit']
                 track_start_pos_x[0] = track['start'][0]
                 track_start_pos_y[0] = track['start'][1]
-                track_start_pos_z[0] = track['start'][2]
+                track_start_pos_z[0] = track['start'][2]*10
                 track_start_pos_t[0] = track['start'][3]
                 track_end_pos_x[0]   = track['end'][0]
                 track_end_pos_y[0]   = track['end'][1]
-                track_end_pos_z[0]   = track['end'][2]
+                track_end_pos_z[0]   = track['end'][2]*10
                 track_end_pos_t[0]   = track['end'][3]
                 track_length[0]      = track['length']
                 track_theta[0]       = track['theta']
