@@ -656,6 +656,13 @@ def birksModel_func(E, Q0, k):
     dE_dx = 2.1
     #rho_LAr = 1.40
     #return 0.83 * Q0 / (1. + ((k/E*dE_dx)/(rho_LAr*E/1000.)))
+    return Q0 / (1. + k/E*dE_dx)
+
+
+def birksModel_func_modified(E, Q0, k):
+    dE_dx = 2.1
+    #rho_LAr = 1.40
+    #return 0.83 * Q0 / (1. + ((k/E*dE_dx)/(rho_LAr*E/1000.)))
     A_ICARUS = 0.83
     return A_ICARUS * Q0 / (1. + k/E*dE_dx)
 
@@ -755,3 +762,165 @@ def plot_birksAndBoxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis
     
     return Q0_boxModel, Q0_boxModel_err, beta_boxModel, beta_boxModel_err,\
            Q0_birksModel, Q0_birksModel_err, k_birksModel, k_birksModel_err #, A_birksModel, A_birksModel_err
+
+
+def plot_birksModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+    seaborn.set(rc={'figure.figsize':(15, 10),})
+    seaborn.set_context('talk') # or paper
+    
+    # Make birks model fit
+    popt_birksModel, pcov_birksModel = curve_fit(birksModel_func, x_vals, y_vals) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    #print(' popt_birksModel: ', popt_birksModel)
+    #print(' pcov_birksModel: ', pcov_birksModel)
+    Q0_birksModel     = popt_birksModel[0]
+    Q0_birksModel_err = np.sqrt(pcov_birksModel[0][0])
+    k_birksModel      = popt_birksModel[1]
+    k_birksModel_err  = np.sqrt(pcov_birksModel[1][1])
+    #A_birksModel      = popt_birksModel[2]
+    #A_birksModel_err  = np.sqrt(pcov_birksModel[2][2])
+    print(' Q0_birksModel: ', Q0_birksModel, ' +/- ', Q0_birksModel_err)
+    print(' k_birksModel:  ', k_birksModel,  ' +/- ', k_birksModel_err)
+    #print(' A_birksModel:  ', A_birksModel,  ' +/- ', A_birksModel_err)
+    
+    # Produce fitted points
+    fit_birksModel_x = []
+    fit_birksModel_y = []
+    n_points = 100
+    for i in range(1,n_points+1):
+        E_i = i/n_points
+        fit_birksModel_x.append(E_i)
+        fit_birksModel_y.append(birksModel_func(E_i,*popt_birksModel))
+
+    # Define parameters of the frame
+    fig = plt.figure() # plt.figure(figsize=(width,height))
+    ax = fig.add_subplot(111)
+    ax.patch.set_alpha(0.0)
+    ax.spines['bottom'].set_color('0.5') #'black', ...
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['top'].set_color('0.5')
+    ax.spines['top'].set_linewidth(2)
+    ax.spines['top'].set_visible(True)
+    ax.spines['right'].set_color('0.5')
+    ax.spines['right'].set_linewidth(2)
+    ax.spines['right'].set_visible(True)
+    ax.spines['left'].set_color('0.5')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['left'].set_visible(True)
+
+    # Ticks, grid and ticks labels
+    ax.tick_params(direction='in', length=10, width=2,                 # direction, length and width of the ticks (in, out, inout)
+                   colors='0.5',                                       # color of the ticks ('black', '0.5')
+                   bottom=True, top=True, right=True, left=True,       # whether to draw the respective ticks
+                   zorder = 10.,                                       # tick and label zorder
+                   pad = 10.,                                          # distance between ticks and tick labels
+                   labelsize = 17,                                     # size of the tick labels
+                   labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
+
+    # Axis limits
+    ax.set_xlim((x_min,x_max))
+    ax.set_ylim((y_min,y_max))
+    
+    plt.errorbar(x_vals,y_vals,xerr=x_err,yerr=y_err,fmt='o',label='Data') # fmt='-o'
+    plt.plot(fit_birksModel_x,fit_birksModel_y,'g-',label=r'Birks Model Fit: $L_0 = %3.1f \pm %3.1f , k_E = %3.3f \pm %3.3f$' %(Q0_birksModel,Q0_birksModel_err,k_birksModel,k_birksModel_err))
+
+    # Legend
+    plt.legend(loc=[0.4,0.08], prop={'size': 17})
+    #plt.legend(loc=[0.75,0.85], prop={'size': 17}) # loc='upper right', 'best'
+
+    # Axis labels
+    plt.xlabel(axis_labels[0], fontsize=20, labelpad=20)
+    plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
+
+    # Logarithmic y axis
+    #plt.ylim(bottom=0.9) #, top=200)
+    #plt.yscale('linear') # linear, log
+
+    # Save figure
+    plt.savefig(save_name, dpi=400) # bbox_inches='tight'
+    #plt.close()
+    #plt.show()
+    
+    return Q0_boxModel, Q0_boxModel_err, beta_boxModel, beta_boxModel_err,\
+           Q0_birksModel, Q0_birksModel_err, k_birksModel, k_birksModel_err #, A_birksModel, A_birksModel_err
+
+
+def plot_birksModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+    seaborn.set(rc={'figure.figsize':(15, 10),})
+    seaborn.set_context('talk') # or paper
+    
+    # Make birks model fit
+    popt_birksModel, pcov_birksModel = curve_fit(birksModel_func, x_vals, y_vals) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    #print(' popt_birksModel: ', popt_birksModel)
+    #print(' pcov_birksModel: ', pcov_birksModel)
+    Q0_birksModel     = popt_birksModel[0]
+    Q0_birksModel_err = np.sqrt(pcov_birksModel[0][0])
+    k_birksModel      = popt_birksModel[1]
+    k_birksModel_err  = np.sqrt(pcov_birksModel[1][1])
+    #A_birksModel      = popt_birksModel[2]
+    #A_birksModel_err  = np.sqrt(pcov_birksModel[2][2])
+    print(' Q0_birksModel: ', Q0_birksModel, ' +/- ', Q0_birksModel_err)
+    print(' k_birksModel:  ', k_birksModel,  ' +/- ', k_birksModel_err)
+    #print(' A_birksModel:  ', A_birksModel,  ' +/- ', A_birksModel_err)
+    
+    # Produce fitted points
+    fit_birksModel_x = []
+    fit_birksModel_y = []
+    n_points = 100
+    for i in range(1,n_points+1):
+        E_i = i/n_points
+        if E_i > 0.05:
+            fit_birksModel_x.append(E_i)
+            fit_birksModel_y.append(birksModel_func(E_i,*popt_birksModel))
+
+    # Define parameters of the frame
+    fig = plt.figure() # plt.figure(figsize=(width,height))
+    ax = fig.add_subplot(111)
+    ax.patch.set_alpha(0.0)
+    ax.spines['bottom'].set_color('0.5') #'black', ...
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['top'].set_color('0.5')
+    ax.spines['top'].set_linewidth(2)
+    ax.spines['top'].set_visible(True)
+    ax.spines['right'].set_color('0.5')
+    ax.spines['right'].set_linewidth(2)
+    ax.spines['right'].set_visible(True)
+    ax.spines['left'].set_color('0.5')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['left'].set_visible(True)
+
+    # Ticks, grid and ticks labels
+    ax.tick_params(direction='in', length=10, width=2,                 # direction, length and width of the ticks (in, out, inout)
+                   colors='0.5',                                       # color of the ticks ('black', '0.5')
+                   bottom=True, top=True, right=True, left=True,       # whether to draw the respective ticks
+                   zorder = 10.,                                       # tick and label zorder
+                   pad = 10.,                                          # distance between ticks and tick labels
+                   labelsize = 17,                                     # size of the tick labels
+                   labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
+
+    # Axis limits
+    ax.set_xlim((x_min,x_max))
+    ax.set_ylim((y_min,y_max))
+    
+    plt.errorbar(x_vals,y_vals,xerr=x_err,yerr=y_err,fmt='o',label='Data') # fmt='-o'
+    plt.plot(fit_birksModel_x,fit_birksModel_y,'g-',label=r'Birks Model Fit: $L_0 = %3.1f \pm %3.1f , k_E = %3.3f \pm %3.3f$' %(Q0_birksModel,Q0_birksModel_err,k_birksModel,k_birksModel_err))
+
+    # Legend
+    plt.legend(loc=[0.35,0.08], prop={'size': 17})
+    #plt.legend(loc=[0.75,0.85], prop={'size': 17}) # loc='upper right', 'best'
+
+    # Axis labels
+    plt.xlabel(axis_labels[0], fontsize=20, labelpad=20)
+    plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
+
+    # Logarithmic y axis
+    #plt.ylim(bottom=0.9) #, top=200)
+    #plt.yscale('linear') # linear, log
+
+    # Save figure
+    plt.savefig(save_name, dpi=400) # bbox_inches='tight'
+    #plt.close()
+    #plt.show()
+    
+    return Q0_birksModel, Q0_birksModel_err, k_birksModel, k_birksModel_err #, A_birksModel, A_birksModel_err
