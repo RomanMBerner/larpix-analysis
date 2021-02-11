@@ -764,7 +764,7 @@ def plot_birksAndBoxModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis
            Q0_birksModel, Q0_birksModel_err, k_birksModel, k_birksModel_err #, A_birksModel, A_birksModel_err
 
 
-def plot_birksModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+def plot_birksModel_1(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
     seaborn.set(rc={'figure.figsize':(15, 10),})
     seaborn.set_context('talk') # or paper
     
@@ -845,7 +845,7 @@ def plot_birksModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_label
            Q0_birksModel, Q0_birksModel_err, k_birksModel, k_birksModel_err #, A_birksModel, A_birksModel_err
 
 
-def plot_birksModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
+def plot_birksModel_2(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_labels,save_name):
     seaborn.set(rc={'figure.figsize':(15, 10),})
     seaborn.set_context('talk') # or paper
     
@@ -904,7 +904,7 @@ def plot_birksModel(x_vals,y_vals,x_err,y_err,x_min,x_max,y_min,y_max,axis_label
     ax.set_ylim((y_min,y_max))
     
     plt.errorbar(x_vals,y_vals,xerr=x_err,yerr=y_err,fmt='o',label='Data') # fmt='-o'
-    plt.plot(fit_birksModel_x,fit_birksModel_y,'g-',label=r'Birks Model Fit: $L_0 = %3.1f \pm %3.1f , k_E = %3.3f \pm %3.3f$' %(Q0_birksModel,Q0_birksModel_err,k_birksModel,k_birksModel_err))
+    plt.plot(fit_birksModel_x,fit_birksModel_y,'g-', label=r'Birks Model Fit: $L_0 = %3.1f \pm %3.1f , k_E = %3.3f \pm %3.3f$' %(Q0_birksModel,Q0_birksModel_err,k_birksModel,k_birksModel_err))
 
     # Legend
     plt.legend(loc=[0.35,0.08], prop={'size': 17})
