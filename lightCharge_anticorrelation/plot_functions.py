@@ -56,7 +56,92 @@ def plot_h1(input_list,x_min,x_max,n_bins,axis_labels,save_name):
     # Save figure
     plt.savefig(save_name, dpi=400) # bbox_inches='tight'
     plt.close()
+
+
+def gauss_fit(x, a, mu, sigma):
+    return a * np.exp(-(x-mu)**2/(2.*sigma**2))
+
+
+def plot_h1_with_gaussFit(input_list,x_min,x_max,n_bins,axis_labels,save_name):
+    seaborn.set(rc={'figure.figsize':(15, 10),})
+    seaborn.set_context('talk') # or paper
+
+    # Define parameters of the frame
+    fig = plt.figure() # plt.figure(figsize=(width,height))
+    ax = fig.add_subplot(111)
+    ax.patch.set_alpha(0.0)
+    ax.spines['bottom'].set_color('0.5') #'black', ...
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['bottom'].set_visible(True)
+    ax.spines['top'].set_color('0.5')
+    ax.spines['top'].set_linewidth(2)
+    ax.spines['top'].set_visible(True)
+    ax.spines['right'].set_color('0.5')
+    ax.spines['right'].set_linewidth(2)
+    ax.spines['right'].set_visible(True)
+    ax.spines['left'].set_color('0.5')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['left'].set_visible(True)
+
+    # Ticks, grid and ticks labels
+    ax.tick_params(direction='in', length=10, width=2,                 # direction, length and width of the ticks (in, out, inout)
+                   colors='0.5',                                       # color of the ticks ('black', '0.5')
+                   bottom=True, top=True, right=True, left=True,       # whether to draw the respective ticks
+                   zorder = 10.,                                       # tick and label zorder
+                   pad = 10.,                                          # distance between ticks and tick labels
+                   labelsize = 17,                                     # size of the tick labels
+                   labelright=False, labeltop=False)                   # wether to draw the tick labels on axes
+
+    n, bins, patches = plt.hist(input_list,\
+                                bins=n_bins,\
+                                range=[x_min,x_max],\
+                                histtype='stepfilled',\
+                                stacked=False,\
+                                linewidth=3,\
+                                alpha=0.5,\
+                                label='Data') # histtype='step' or 'stepfilled', label='track_length'
     
+    fit_bins = []
+    for i in range(len(bins)-1):
+        fit_bins.append((bins[i]+bins[i+1])/2.)
+
+    popt, pcov = curve_fit(gauss_fit, fit_bins, n) #, p0=(150,2000)) #, method='dogbox') # p0=(150,1000), method='dogbox'
+    
+    a         = popt[0]
+    a_err     = np.sqrt(pcov[0][0])
+    mu        = popt[1]
+    mu_err    = np.sqrt(pcov[1][1])
+    sigma     = popt[2]
+    sigma_err = np.sqrt(pcov[2][2])
+    
+    fit_x = []
+    fit_y = []
+    n_points = 100
+    
+    for i in range(1,n_points+1):
+        _x = (np.max(input_list)-np.min(input_list))/n_points/2. + (np.max(input_list)-np.min(input_list))/n_points*i
+        fit_x.append(_x)
+        fit_y.append(gauss_fit(_x,*popt))
+    
+    plt.plot(fit_x,fit_y,'g-',label=r'Gauss Fit: $\mu = %3.3f, \sigma = %3.3f$' %(mu,sigma))
+    #plt.plot(fit_x,fit_y,'g-',label=r'Gauss Fit: $\mu = %3.1f \pm %3.1f , \sigma = %3.3f \pm %3.3f$' %(Q0_birksModel,Q0_birksModel_err,k_birksModel,k_birksModel_err))
+    
+    # Legend
+    plt.legend(prop={'size': 17})
+    #plt.legend(loc=[0.55,0.85], prop={'size': 17}) # loc='upper right'
+
+    # Axis labels
+    plt.xlabel(axis_labels[0], fontsize=20, labelpad=20)
+    plt.ylabel(axis_labels[1], fontsize=20, labelpad=20)
+
+    # Logarithmic y axis
+    #plt.ylim(bottom=0.9) #, top=200)
+    #plt.yscale('linear') # linear, log
+
+    # Save figure
+    plt.savefig(save_name, dpi=400) # bbox_inches='tight'
+    plt.close()
+
 
 def plot_h2(input_lists,x_bins,y_bins,axis_labels,save_name):
     # Size
