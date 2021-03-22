@@ -3,3 +3,4 @@
 __pycache__
 start_jupyterLab.sh
 jupyterLab_log.txt
+*.png
