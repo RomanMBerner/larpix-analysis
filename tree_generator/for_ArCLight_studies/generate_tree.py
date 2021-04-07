@@ -111,7 +111,6 @@ def main(argv=None):
         #    continue
         # ===========================================================================
 
-         
         # ===========================================================================
         # SingleModule 
         #if files[file_number] != 'datalog_2020_11_29_15_07_39_CET_evd.h5':
@@ -121,34 +120,8 @@ def main(argv=None):
         #if files[file_number] != 'datalog_2020_11_29_23_40_11_CET_evd.h5':
         #    continue
             
-        if not (file_number >= 0 and file_number < 1):
-        #if not (file_number >= 1 and file_number < 2):
-        #if not (file_number >= 2 and file_number < 3):
-        #if not (file_number >= 3 and file_number < 4):
-        #if not (file_number >= 4 and file_number < 5):
-        #if not (file_number >= 5 and file_number < 6):
-        #if not (file_number >= 6 and file_number < 7):
-        #if not (file_number >= 7 and file_number < 8):
-        #if not (file_number >= 8 and file_number < 9):
-        #if not (file_number >= 9 and file_number < 10):
-        #if not (file_number >= 10 and file_number < 11):
-        #if not (file_number >= 11 and file_number < 12):
-        #if not (file_number >= 12 and file_number < 13):
-        #if not (file_number >= 13 and file_number < 14):
-        #if not (file_number >= 14 and file_number < 15):
-        #if not (file_number >= 15 and file_number < 16):
-        #if not (file_number >= 16 and file_number < 17):
-        #if not (file_number >= 17 and file_number < 18):
-        #if not (file_number >= 18 and file_number < 19):
-        #if not (file_number >= 19 and file_number < 20):
-        #if not (file_number >= 20 and file_number < 21):
-        #if not (file_number >= 21 and file_number < 22):
-        #if not (file_number >= 22 and file_number < 23):
-        #if not (file_number >= 23 and file_number < 24):
-        #if not (file_number >= 24 and file_number < 25):
-        #if not (file_number >= 25 and file_number < 26):
-        #if not (file_number >= 26 and file_number < 27):
-            continue
+        #if not (file_number >= 0 and file_number < 5):
+        #    continue
         # ===========================================================================
 
 
